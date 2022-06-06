@@ -8,6 +8,7 @@ Get started by installing the conda environment.
 cd into project root
 mamba env create -f environment.yml
 conda activate scipy_dev
+pip install -e .
 ```
 
 ## Compiling the Presentation
