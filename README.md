@@ -27,8 +27,9 @@ $ pytask src/scipy_dev/task_test_installations.py
 
 **Installation:**
 
-- marp: Can be installed from the [README instructions](https://github.com/marp-team/marp-cli)
-- decktape: Can be installed via ``npm install -g decktape``
+- marp: Can be installed from the
+  [README instructions](https://github.com/marp-team/marp-cli)
+- decktape: Can be installed via `npm install -g decktape`
 
 ## Credits
 

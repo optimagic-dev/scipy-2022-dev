@@ -1,6 +1,6 @@
-import pytask
 import subprocess
 
+import pytask
 from scipy_dev.config import BLD
 from scipy_dev.config import SRC
 
@@ -16,7 +16,9 @@ for file in main_files:
 
         kwargs = {
             "depends_on": SRC.joinpath("presentation", f"{file}.md"),
-            "produces": BLD.joinpath("public", "presentation", f"{file}.{output_format}"),
+            "produces": BLD.joinpath(
+                "public", "presentation", f"{file}.{output_format}"
+            ),
         }
 
         @pytask.mark.task(id=f"{file}-{output_format}", kwargs=kwargs)
@@ -25,11 +27,15 @@ for file in main_files:
             commands = [
                 "marp",  # executable
                 "--html",  # allows html code in markdown files
-                "--theme-set", str(CSS_PATH),  # use custom css file
-                "--output", str(produces),  # output file
+                "--theme-set",
+                str(CSS_PATH),  # use custom css file
+                "--output",
+                str(produces),  # output file
                 # meta data
-                "--title", "Scipy 2022: Estimagic Tutorial",
-                "--author", "Janos Gabler and Tim Mensinger",
+                "--title",
+                "Scipy 2022: Estimagic Tutorial",
+                "--author",
+                "Janos Gabler and Tim Mensinger",
             ]
 
             if "pdf" in produces.suffix:
