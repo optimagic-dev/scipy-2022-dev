@@ -1,0 +1,24 @@
+/* @theme custom */
+
+@import 'gaia';
+
+section {
+    /* Override default background */
+    background: #faebd7;
+}
+
+section.split {
+    overflow: visible;
+    display: grid;
+    grid-template-columns: 500px 500px;
+    grid-template-rows: 100px auto;
+    grid-template-areas: 
+        "slideheading slideheading"
+        "leftpanel rightpanel";
+}
+section.split h3 {
+    grid-area: slideheading;
+    font-size: 50px;
+}
+section.split .leftcol { grid-area: leftpanel; }
+section.split .rightcol { grid-area: rightpanel; }
