@@ -11,23 +11,24 @@ conda activate scipy_dev
 pip install -e .
 ```
 
-## Compiling the Presentation
+## Presentation
 
-The presentation is compiled to HTML using [marp](https://marp.app/), which needs to be
+Our presentation is compiled to HTML using [marp](https://marp.app/), which needs to be
 installed and made available to the PATH. To get a PDF version that correctly displays
 pauses/breaks, we utilize [decktape](https://github.com/astefanutti/decktape).
+
+### Installation of marp and decktape
 
 To check that both executables are installed run
 
 ```bash
-pytask
+$ pytask src/scipy_dev/task_test_installations.py
 ```
 
-### Decktape
+**Installation:**
 
-```bash
-$ decktape generic -s 1280x720 --load-pause 3000 file.html file.pdf
-```
+- marp: Can be installed from the [README instructions](https://github.com/marp-team/marp-cli)
+- decktape: Can be installed via ``npm install -g decktape``
 
 ## Credits
 
