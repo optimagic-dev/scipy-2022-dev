@@ -5,17 +5,17 @@ from scipy_dev.config import BLD
 from scipy_dev.config import SRC
 
 
-CSS_PATH = SRC.joinpath("presentation", "custom.css").resolve()
-
-
 main_files = ["main"]
 
 for file in main_files:
 
-    for output_format in ["pdf", "html"]:
+    for output_format in ["html"]:
 
         kwargs = {
-            "depends_on": SRC.joinpath("presentation", f"{file}.md"),
+            "depends_on": {
+                "source": BLD.joinpath("presentation", f"{file}.md"),
+                "css": SRC.joinpath("presentation", "custom.css").resolve(),
+            },
             "produces": BLD.joinpath(
                 "public", "presentation", f"{file}.{output_format}"
             ),
@@ -27,20 +27,13 @@ for file in main_files:
             commands = [
                 "marp",  # executable
                 "--html",  # allows html code in markdown files
+                "--allow-local-files",
                 "--theme-set",
-                str(CSS_PATH),  # use custom css file
+                str(depends_on["css"]),  # use custom css file
                 "--output",
                 str(produces),  # output file
-                # meta data
-                "--title",
-                "Scipy 2022: Estimagic Tutorial",
-                "--author",
-                "Janos Gabler and Tim Mensinger",
             ]
 
-            if "pdf" in produces.suffix:
-                commands.append("--pdf")
-
-            commands += ["--", depends_on]  # source file
+            commands += ["--", depends_on["source"]]
 
             subprocess.call(commands)
