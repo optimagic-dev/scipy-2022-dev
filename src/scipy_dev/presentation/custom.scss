@@ -7,6 +7,30 @@ section {
     background: white;
 }
 
+pre {
+    line-height: 1.15;
+    overflow: visible;
+
+    background: #f6f8fa;
+    background-color: #f6f8fa;
+
+    border: 0.1em solid #d0d7de;
+    border-radius: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+
+    line-height: 1.45;
+    overflow: auto;
+    padding: 16px;
+}
+
+section code {
+    color: #24292f;
+}
+
+
 section.split {
     overflow: visible;
     display: grid;

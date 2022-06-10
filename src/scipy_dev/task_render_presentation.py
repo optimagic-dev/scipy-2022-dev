@@ -1,7 +1,7 @@
 import subprocess
 
 import pytask
-from scipy_dev.config import BLD
+from scipy_dev.config import PUBLIC
 from scipy_dev.config import SRC
 
 
@@ -13,12 +13,10 @@ for file in main_files:
 
         kwargs = {
             "depends_on": {
-                "source": BLD.joinpath("presentation", f"{file}.md"),
-                "css": SRC.joinpath("presentation", "custom.css").resolve(),
+                "source": SRC.joinpath("presentation", f"{file}.md"),
+                "scss": SRC.joinpath("presentation", "custom.scss").resolve(),
             },
-            "produces": BLD.joinpath(
-                "public", "presentation", f"{file}.{output_format}"
-            ),
+            "produces": PUBLIC.joinpath("presentation", f"{file}.{output_format}"),
         }
 
         @pytask.mark.task(id=f"{file}-{output_format}", kwargs=kwargs)
@@ -29,7 +27,7 @@ for file in main_files:
                 "--html",  # allows html code in markdown files
                 "--allow-local-files",
                 "--theme-set",
-                str(depends_on["css"]),  # use custom css file
+                str(depends_on["scss"]),  # use custom scss file
                 "--output",
                 str(produces),  # output file
             ]

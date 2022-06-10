@@ -10,27 +10,41 @@ dependencies:
   - setuptools_scm
   - toml
 
-  # Reproducibility
-  - conda-lock
-
-  # Package dependencies
+  # Dependencies
   - pytask >=0.2.3
   - pandas
   - numpy
+  - scipy
   - jupyterlab
   - seaborn
+  - jax
+
+  # Algorithms
+  - nlopt
+  - pygmo
+  - cyipopt
 
   # Misc
   - black
   - nb_black
   - ipython
   - pre-commit
+  - pdbpp
   - pytest
   - pytest-cov
   - pytest-xdist
   - tox-conda
 
+  # Reproducibility
+  - conda-lock
+
   - pip:
     - black
     - blackcellmagic
     - pre-commit
+    - jaxopt
+
+    # Algorithms
+    - Py-BOBYQA
+    - DFO-LS
+    - fides==0.7.4
