@@ -10,7 +10,6 @@ theme: custom
 # TITLE PAGE
 ==================================================================================== -->
 
-<!-- _footer: IZA and IFS, University of Bonn -->
 <!-- paginate: false -->
 ## Practical Numerical Optimization with Estimagic, JaxOpt, Scipy
 
@@ -20,6 +19,8 @@ Scipy Conference 2022
 
 #### Janos Gabler & Tim Mensinger
 
+University of Bonn
+
 ---
 
 <!-- ===================================================================================
@@ -27,7 +28,7 @@ Scipy Conference 2022
 ==================================================================================== -->
 
 <!-- paginate: true -->
-## Index
+### Index
 
 1. Introduction
 2. Installation

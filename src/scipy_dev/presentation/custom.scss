@@ -3,8 +3,8 @@
 @import 'gaia';
 
 section {
-    /* Override default background */
     background: white;
+    font-size: 30px;
 }
 
 pre {
@@ -34,7 +34,7 @@ section code {
 section.split {
     overflow: visible;
     display: grid;
-    grid-template-columns: 500px 500px;
+    grid-template-columns: 550px 550px;
     grid-template-rows: 100px auto;
     grid-template-areas:
         "slideheading slideheading"
