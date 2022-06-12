@@ -34,7 +34,7 @@ section code {
 section.split {
     overflow: visible;
     display: grid;
-    grid-template-columns: 550px 550px;
+    grid-template-columns: 600px 500px;
     grid-template-rows: 100px auto;
     grid-template-areas:
         "slideheading slideheading"

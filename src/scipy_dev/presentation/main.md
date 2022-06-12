@@ -11,6 +11,7 @@ theme: custom
 ==================================================================================== -->
 
 <!-- paginate: false -->
+
 ## Practical Numerical Optimization with Estimagic, JaxOpt, Scipy
 
 Scipy Conference 2022
@@ -24,91 +25,524 @@ University of Bonn
 ---
 
 <!-- ===================================================================================
-# INDEX
+# First hour
 ==================================================================================== -->
 
+
 <!-- paginate: true -->
+
+### About Us
+
+- link to webpage
+
+---
+
 ### Index
 
-1. Introduction
-2. Installation
-3. Why optimization is difficult
+1. What is numerical optimization
+2. Introduction to `scipy.optimize`
+3. Introduction to `estimagic`
+4. Choosing algorithms
+5. Advanced estimagic
+6. Jax and Jaxopt
 
 ---
 
-<!-- ===================================================================================
-# INTRODUCTION
-==================================================================================== -->
-
-<!-- paginate: false -->
 <!-- _class: lead -->
-# Introduction
+# What is numerical optimization
 
 ---
 
-### Problem
+### Example problem
 
-- Parameter $x$
-- Criterion function $f(x)$
-- Constraints $C(x)$
-- Bounds $a \leq x \leq b$
+<!-- _class: split -->
 
-- minimize/maximize $f$ wrt constraints
+<div class=leftcol>
+
+- Parameters $x_1$, $x_2$
+- Criterion $f(x_1, x_2) = x_1^2 + x_2^2$
+- Want: $x_1^*, x_2^* = argmin_{x_1, x_2} f(x_1, x_2)$
+- Possible extensions:
+    - Constraints
+    - Bounds
+
+</div>
+
+
+
+<div class=rightcol>
+
+![sphere](../graphs/sphere.png)
+
+</div>
+
 
 
 ---
 
-### Running example
+### Brute force vs. smarter algorithm
+
+<!-- Paper 1 -->
+- contour plot of function with gridpoints
+- contour plot of function with lbfgsb history
+
+---
+
+### Complexity of brute force
+
+<!-- Paper 2 -->
+- 1d grid of points
+- 2d grid of points
+- 3d grid of points
+- lineplot of exponential growth of number of gridpoints with 10 points per dim
+
+---
+
+### What's (not) in this talk
+
+
+- Covered
+    - Nonlinear optimization of continuous parameters
+    - Linear and nonlinear constraints
+    - Global optimization
+- Not covered
+    - Linear programming
+    - Mixed integer programming
+
+
+
+---
+
+<!-- _class: lead -->
+# Introduction to scipy.optimize
+
+---
+
+### Solve example problem with scipy.optimize
 
 ```python
-def sphere(x):
-    return np.sum(x ** 2)
+>>> import numpy as np
+>>> from scipy.optimize import minimize
 
-def sphere_gradient(x):
-    return 2 * x
+>>> def sphere(x):
+>>>     return np.sum(x ** 2)
+
+>>> x0 = np.ones(2)
+>>> res = minimize(f, x0)
+>>> res.fun
+0.0
+>>> res.x
+array([0.0, 0.0])
 ```
+---
+
+### Features of scipy.optimize
+
+- `minimize` as unified interface to 14 local optimizers
+    - some support bounds
+    - some support (non)linear constraints
+- Parameters are 1d numpy arrays
+- Numerical derivatives are calculated if necessary
+- Maximization is done by minimizing $- f(x)$
+
+---
+
+
+<!-- _class: lead -->
+# Practice Session: First optimization with scipy.optimize
+
+---
+
+### Shortcomings of scipy.optimize
+
+- Very limited number of algorithms
+- If optimization crashes, all information is lost
+- No parallelization
+- Maximization via minimize is error-prone and cumbersome
+- No diagnostics tools (e.g. visualization of histories)
+- No feedback before optimization ends
+- Parameters are 1d numpy arrays
+- No built-in multistart, benchmarking, scaling, reparametrization or logging
+- **In short**: scipy.optimize is a low level library
+
+---
+
+<!-- _class: lead -->
+# Introduction to estimagic
+
+---
+
+### You can use it like scipy
+
+
+---
+
+### Params can be anything
+
+
+---
+
+### OptimizeResult
+
+
+
+---
+
+### Criterion plot
+
+---
+
+### Params plot
+
+
+---
+
+### Algorithms from scipy, nlopt, TAO, pygmo, ...
+
+
+---
+
+### Constraints via reparametrizations
+
+
+---
+
+### Closed-form or parallel numerical derivatives
+
+
+---
+
+### There is maximize
+
+
+---
+
+### Built in multistart framework
+
+
+---
+
+### Least squares optimizers
+
+
+---
+
+### Logging and Dashboard
+
+
+---
+
+### Harmonized `algo_options`
+
+---
+
+### The estimagic Team
+
+
+---
+<!-- ===================================================================================
+# Second hour
+==================================================================================== -->
+<!-- _class: lead -->
+# Break (5 min)
+
+---
+
+
+<!-- _class: lead -->
+# Practice Session: Convert previous example to estimagic
+
+---
+
+<!-- _class: lead -->
+# Choosing algorithms
+
+---
+
+### Relevant problem properties
+
+
+---
+
+### Classes of algorithms
+
+
+---
+
+### `scipy_lbfgsb`
+
+
+---
+
+### `fides`
+
+
+---
+
+### `nlopt_bobyqa`
+
+
+---
+
+### `nlopt_neldermead`
+
+---
+
+### `nag_dfols`
+
+
+---
+
+### `scipy_ls_lm`
+
+- Or other scipy ls. Need to benchmark
+
+
+---
+
+### `ipopt`
+
+
+---
+<!-- _class: lead -->
+# Practice Session: Play with `algorithm` and `algo_options`
+
+---
+
+### What is benchmarking
+
+- highlight that we have a large number of problems
+- cite paper about best practices
+- ...
+
+---
+
+### Running benchmarks in estimagic
+
+
+---
+### Profile plots
+
+- two column slide with normalized and absolute profile plot
+
+
+---
+
+
+### Convergence plots
+
+---
+
+
+### Built in benchmark suites and customization of problems
+
+- Example
+- Estimagic
+- More-Wild
+- ...
+- How to add noise
+- How to add bad scaling
+
+---
+
+
+<!-- _class: lead -->
+# Practice Session: Benchmarking optimizers
+
+---
+
+
+<!-- _class: lead -->
+# Break (10 min)
 
 ---
 
 <!-- ===================================================================================
-# INSTALLATION
+# Third hour
 ==================================================================================== -->
 
-<!-- paginate: false -->
-<!-- _class: lead -->
-# Installation
+### Terminology of constraints in estimagic
+
+- bounds: handled by most algorithms
+- estimagic constraints: handled via reparametrization and bounds
+- nonlinear constraints: handled by some algorithms
 
 ---
-<!-- paginate: true -->
-### Installation
 
-```console
-$ conda config --add channels conda-forge
-$ conda install -c conda-forge estimagic
-```
-or
-```console
-$ pip install estimagic
-```
+### What is reparametrization
+
+- simple example with increasing constraint
+
+---
+
+### Example problem in two flavors
+
+- take the one from estimagic docs
+- dict version
+- df version
+
+---
+
+### Fixing parameters
+
+- two columns, dict and df version
+
+
+---
+
+### Linear constraints
+
+
+---
+
+### What else can be done with reparametrization
+
+- list constraint types
+- link to docs
+
+
+---
+
+
+### Nonlinear constraints
+
+
+---
+
+
+<!-- _class: lead -->
+# Practice Session: Constrained optimization
+
+
+---
+
+
+### What is global optimization
+
+- needs bounds to be well defined!
+
+---
+
+### Genetic algorithms
+
+---
+
+### Bayesian optimization
+
+---
+
+### Multistart optimization
+
+---
+
+### Don't expect too much
+
+- Global optimizers run long
+- Precision is low
+- No guarantee if you function is noisy
+- ...
+
+---
+
+<!-- _class: lead -->
+# Practice Session: Multistart vs. global optimizers
+
+
+---
+
+### Numerical instability during optimization
+
+
+---
+
+### Error handling in estimagic
+
+---
+
+### Scaling of optimization problems
+
+
+---
+### Scaling in estimagic
+
+
+
+---
+<!-- _class: lead -->
+# Practice Session: Scaling of optimization problems
+
 
 ---
 
 <!-- ===================================================================================
-# WHY OPTIMIZATION IS DIFFICULT
+# Last hour
 ==================================================================================== -->
 
-<!-- paginate: false -->
-<!-- _class: lead -->
-# Why optimization is difficult
+### Other features and documentation of estimagic
 
 ---
-<!-- paginate: true -->
 
-### Why grid search is infeasible
+### Numerical dervatives vs. automatic differentiation
 
-- Want precision up to 2 decimal places
 
-- How many function evaluations do we need?
+---
+### What is JAX
+
+
+---
+
+### Calculating derivatives with JAX
+
+
+---
+
+<!-- _class: lead -->
+# Practice Session: Using JAX derivatives in estimagic
+
+
+---
+
+### What is JAXopt and when to use it
+
+
+
+---
+
+### Simple optimization in JAXopt
+
+
+---
+
+### Vmap in JAX
+
+---
+
+### Vectorized optimization in JAXopt
+
+
+---
+
+### Differentiate an optimizer in JAXopt
+
+
+---
+
+<!-- _class: lead -->
+# Practice Session: Vectorized optimization in JAXopt
+
+---
+
+### Summary
+
+
+---
+
+
+<!-- ===================================================================================
+# snippets
+==================================================================================== -->
+<!-- _class: lead -->
+# Snippets
 
 ---
 ### A two-column slide
@@ -116,10 +550,7 @@ $ pip install estimagic
 
 <div class=leftcol>
 
-#### Title left column
-- listed item
-- listed item
-- listed item
+bla
 
 </div>
 
@@ -128,10 +559,7 @@ $ pip install estimagic
 #### Title right column
 
 ```python
-def f(x):
-    return x ** 2
-
-g = converter.wrap(f, kwargs, key="value")
+a = 1
 ```
 
 </div>
