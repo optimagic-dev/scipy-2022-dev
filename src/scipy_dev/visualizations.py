@@ -17,6 +17,15 @@ def create_gradient_descent_figure(
     return fig, ax
 
 
+def create_curse_of_dimensionality_figure(figsize=(17, 8), marker_size=500):
+    fig = plt.figure()
+    for dimension in (1, 2, 3):
+        ax = fig.add_subplot(1, 3, dimension, projection="3d")
+        _plot_curse_of_dimensionality_dimension(dimension, ax, marker_size=marker_size)
+    fig.set_size_inches(*figsize)
+    return fig, ax
+
+
 def _get_contour_figure(contour_line_width):
 
     # data for contour lines
@@ -72,3 +81,60 @@ def _add_gradient_descent_path(fig, ax, arrowstyle):
     # dots
     ax.scatter(x=[p[0] for p in path], y=[p[1] for p in path], color="gray")
     return fig, ax
+
+
+def _plot_curse_of_dimensionality_dimension(dimension, ax, marker_size):
+    points = _create_points(dimension)
+    alphas = _create_alphas(points, dimension)
+
+    for alpha, p in zip(alphas, points):
+        ax.scatter(*p, s=marker_size, color="tab:blue", alpha=alpha)
+
+    ax.xaxis.set_ticklabels([])
+    ax.yaxis.set_ticklabels([])
+    ax.zaxis.set_ticklabels([])
+
+    ax.axes.set_xlim3d(left=-0.1, right=1.1)
+    ax.axes.set_ylim3d(bottom=-0.1, top=1.1)
+    ax.axes.set_zlim3d(bottom=-0.1, top=1.1)
+
+
+def _create_points(dimension):
+    """Create points for curse of dimensionality plot."""
+    grid = [0, 1 / 3, 2 / 3, 1]
+    if dimension == 1:
+        points = []
+        for p in grid:
+            points.append((1, p, 0))
+    elif dimension == 2:
+        points = []
+        for p in grid:
+            for q in grid:
+                points.append((q, p, 0))
+    elif dimension == 3:
+        points = []
+        for p in grid:
+            for p in grid:
+                for q in grid:
+                    for g in grid:
+                        points.append((q, p, g))
+    return points
+
+
+def _create_alphas(points, dimension):
+    """Create alpha values such that closer markers are darker."""
+    alphas = []
+    for p in points:
+        if dimension in (1, 2):
+            alpha = np.exp(-0.4 * np.linalg.norm(np.array(p) - np.array([1, 0, 0])))
+        else:
+            candidates = np.exp(
+                -1.5
+                * np.linalg.norm(
+                    np.array(p) - np.array([[1, 0, g] for g in (0, 1 / 3, 2 / 3, 1)]),
+                    axis=1,
+                )
+            )
+            alpha = candidates.max()
+        alphas.append(alpha)
+    return alphas
