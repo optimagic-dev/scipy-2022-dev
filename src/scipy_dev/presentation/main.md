@@ -149,7 +149,7 @@ array([0.0, 0.0])
 
 
 <!-- _class: lead -->
-# Practice Session 1: First optimization with scipy.optimize
+# Practice Session 1: First optimization with scipy.optimize (15 min)
 
 ---
 
@@ -250,7 +250,7 @@ array([0.0, 0.0])
 
 
 <!-- _class: lead -->
-# Practice Session 2: Convert previous example to estimagic
+# Practice Session 2: Convert previous example to estimagic (15 min)
 
 ---
 
@@ -305,7 +305,7 @@ array([0.0, 0.0])
 
 ---
 <!-- _class: lead -->
-# Practice Session 3: Play with `algorithm` and `algo_options`
+# Practice Session 3: Play with `algorithm` and `algo_options` (10 min)
 
 ---
 
@@ -347,7 +347,7 @@ array([0.0, 0.0])
 
 
 <!-- _class: lead -->
-# Practice Session 4: Benchmarking optimizers
+# Practice Session 4: Benchmarking optimizers (10 min)
 
 ---
 
@@ -411,7 +411,7 @@ array([0.0, 0.0])
 
 
 <!-- _class: lead -->
-# Practice Session 5: Constrained optimization
+# Practice Session 5: Constrained optimization (10 min)
 
 
 ---
@@ -445,7 +445,7 @@ array([0.0, 0.0])
 ---
 
 <!-- _class: lead -->
-# Practice Session 6: Multistart vs. global optimizers
+# Practice Session 6: Multistart vs. global optimizers (10 min)
 
 
 ---
@@ -469,7 +469,7 @@ array([0.0, 0.0])
 
 ---
 <!-- _class: lead -->
-# Practice Session 7: Scaling of optimization problems
+# Practice Session 7: Scaling of optimization problems (10 min)
 
 
 ---
@@ -497,7 +497,7 @@ array([0.0, 0.0])
 ---
 
 <!-- _class: lead -->
-# Practice Session 8: Using JAX derivatives in estimagic
+# Practice Session 8: Using JAX derivatives in estimagic (10 min)
 
 
 ---
@@ -528,7 +528,7 @@ array([0.0, 0.0])
 ---
 
 <!-- _class: lead -->
-# Practice Session 9: Vectorized optimization in JAXopt
+# Practice Session 9: Vectorized optimization in JAXopt (15 min)
 
 ---
 
