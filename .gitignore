@@ -1,6 +1,9 @@
 # bld
 bld/*
 
+# notebooks
+.ipynb_checkpoints
+
 src/**/*.html
 
 *DS_Store
