@@ -305,7 +305,7 @@ array([0.0, 0.0])
 
 ---
 <!-- _class: lead -->
-# Practice Session 3: Play with `algorithm` and `algo_options` (10 min)
+# Practice Session 3: Play with `algorithm` and `algo_options` (15 min)
 
 ---
 
