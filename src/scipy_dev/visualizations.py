@@ -138,3 +138,49 @@ def _create_alphas(points, dimension):
             alpha = candidates.max()
         alphas.append(alpha)
     return alphas
+
+
+
+def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwarm", figsize=(8,8)):
+    grid = np.linspace(lower_bound, upper_bound, n_gridpoints)
+    x_mesh, y_mesh = np.meshgrid(grid, grid)
+    results = []
+    for x, y in zip(x_mesh.flatten(), y_mesh.flatten()):
+        results.append(func(np.array([x, y])))
+    z_mesh = np.array(results).reshape(x_mesh.shape)
+
+    fig = plt.figure(figsize=figsize)
+    ax = plt.axes(projection="3d")
+    ax.plot_surface(x_mesh, y_mesh, z_mesh, cmap=cmap)
+    ax.contour(
+        x_mesh, y_mesh, z_mesh, levels=30, offset=np.min(z_mesh), cmap=cmap
+    )
+    # ax.contour3D(x_mesh, y_mesh, z_mesh, 800, cmap='coolwarm')
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("f(x,y)")
+    ax.xaxis.set_tick_params(labelsize=8)
+    ax.yaxis.set_tick_params(labelsize=8)
+    ax.zaxis.set_tick_params(labelsize=8)
+    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.grid(False)
+    return fig
+
+
+def plot_contour_2d(func, lower_bound, upper_bound, n_gridpoints):
+    grid = np.linspace(lower_bound, upper_bound, n_gridpoints)
+    x_mesh, y_mesh = np.meshgrid(grid, grid)
+    results = []
+    for x, y in zip(x_mesh.flatten(), y_mesh.flatten()):
+        results.append(func(np.array([x, y])))
+    z_mesh = np.array(results).reshape(x_mesh.shape)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.contourf(x_mesh, y_mesh, z_mesh, levels=30, cmap='coolwarm', alpha=0.7)
+    # add labels and set equal aspect ratio
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_aspect(aspect="equal")
+    return fig
