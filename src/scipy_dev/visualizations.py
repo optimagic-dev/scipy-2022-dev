@@ -18,8 +18,13 @@ def create_gradient_descent_figure(
 
 
 def create_curse_of_dimensionality_figure(
-    figsize=(17, 8), marker_size=500, orientation="h"
+    figsize=None, marker_size=500, orientation="h"
 ):
+    if figsize is None:
+        if orientation == "h":
+            figsize = (17, 8)
+        else:
+            figsize = (10, 12)
     fig = plt.figure()
     if orientation == "h":
         for dimension in (1, 2, 3):
@@ -34,7 +39,9 @@ def create_curse_of_dimensionality_figure(
             _plot_curse_of_dimensionality_dimension(
                 dimension, ax, marker_size=marker_size
             )
-        fig.set_size_inches(*figsize[::-1])
+        fig.set_size_inches(*figsize)
+
+    fig.subplots_adjust(wspace=0, hspace=0)
 
     return fig, ax
 
@@ -44,7 +51,7 @@ def _get_contour_figure(contour_line_width):
     # data for contour lines
     grid = np.linspace(-0.1, 0.1, num=100)
     x, y = np.meshgrid(grid, grid)
-    z = x ** 2 + y ** 2  # sphere
+    z = x**2 + y**2  # sphere
 
     # figure
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -115,7 +122,6 @@ def _plot_curse_of_dimensionality_dimension(dimension, ax, marker_size):
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
 
-
 def _create_points(dimension):
     """Create points for curse of dimensionality plot."""
     grid = [0, 1 / 3, 2 / 3, 1]
@@ -172,7 +178,6 @@ def plot_function_3d(
     ax = plt.axes(projection="3d")
     ax.plot_surface(x_mesh, y_mesh, z_mesh, cmap=cmap)
     ax.contour(x_mesh, y_mesh, z_mesh, levels=30, offset=np.min(z_mesh), cmap=cmap)
-    # ax.contour3D(x_mesh, y_mesh, z_mesh, 800, cmap='coolwarm')
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("f(x,y)")
