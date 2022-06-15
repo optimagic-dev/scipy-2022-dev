@@ -55,7 +55,7 @@ def _get_contour_figure(contour_line_width, cmap):
     # data for contour lines
     grid = np.linspace(-0.1, 0.1, num=100)
     x, y = np.meshgrid(grid, grid)
-    z = x ** 2 + y ** 2  # sphere
+    z = np.sqrt(x ** 2 + y ** 2)  # sphere
 
     # figure
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -65,7 +65,6 @@ def _get_contour_figure(contour_line_width, cmap):
         y,
         z,
         linewidths=contour_line_width,
-        levels=[0.0001, 0.0007, 0.0022, 0.005, 0.009, 0.015],
         zorder=1,
         alpha=0.5,
         cmap=cmap,
@@ -105,7 +104,7 @@ def _add_gradient_descent_path(fig, ax, arrowstyle):
         ax.annotate("", xy=_to, xytext=_from, **kwargs)
 
     # dots
-    ax.scatter(x=[p[0] for p in path], y=[p[1] for p in path], color="dimgrey", s=40)
+    ax.scatter(x=[p[0] for p in path], y=[p[1] for p in path], color="dimgrey", s=50)
     return fig, ax
 
 
