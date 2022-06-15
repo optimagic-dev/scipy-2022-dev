@@ -702,6 +702,32 @@ section.split {
 ---
 
 ### What is JAXopt and when to use it
+<!-- _class: split -->
+<div class=leftcol>
+
+#### What is JAXopt
+
+- Library of optimizers written in JAX
+
+- Hardware accelerated
+
+- Batchable
+
+- Differentiable
+
+
+</div>
+<div class=rightcol>
+
+#### When to use it
+
+- Simple optimization problems
+
+    - But many
+
+- Robustness to parameters
+
+</div>
 
 
 
@@ -709,20 +735,87 @@ section.split {
 
 ### Simple optimization in JAXopt
 
+```python
+>>> import jax
+>>> import jax.numpy as jnp
+>>> from jaxopt import LBFGS
+>>>
+>>> x0 = jnp.arange(3, dtype=float)
+>>> weight = jnp.arange(3, dtype=float)
+>>>
+>>> def criterion(x, weight):
+>>>     return jnp.vdot(x, x + weight)
+>>>
+>>> solver = LBFGS(fun=criterion)
+>>>
+>>> result = solver.run(init_params=x0, weight=weight)
+>>> result.params
+DeviceArray([ 0. , -0.5, -1. ], dtype=float32)
+```
 
 ---
 
 ### Vmap in JAX
 
+```python
+>>> def add(x, y)
+>>>     return x + y
+>>> x, y = jnp.ones((2, 3)), jnp.ones((4, 5))
+>>> add(x, y)
+
+-> 1441       raise TypeError(f'{name} got incompatible shapes for broadcasting: '
+   1442                       f'{", ".join(map(str, map(tuple, shapes)))}.')
+   1443     result_shape.append(non_1s.pop() if non_1s else 1)
+   1444 return tuple(result_shape)
+
+TypeError: add got incompatible shapes for broadcasting: (2, 3), (4, 5).
+```
+
+---
+
+### Vmap in JAX (2)
+
 ---
 
 ### Vectorized optimization in JAXopt
+
+```python
+>>> from jax import jit, vmap
+>>>
+>>> def solve(x, weight):
+>>>     return solver.run(init_params=x, weight=weight).params
+>>>
+>>> batch_solve = jit(vmap(solve, in_axes=(None, 0)))
+>>>
+>>> weights = jnp.arange(6, dtype="float64").reshape(2, 3)
+>>> weights
+DeviceArray([[0., 1., 2.],
+             [3., 4., 5.]], dtype=float32)
+>>>
+>>> batch_solve(x0, weights)
+DeviceArray([[ 0. , -0.5, -1. ],
+             [-1.5, -2. , -2.5]], dtype=float32)
+```
 
 
 ---
 
 ### Differentiate an optimizer in JAXopt
 
+```python
+>>> from jax import jacobian
+>>>
+>>> jacobian(solve, argnums=1)(x0, weight)
+DeviceArray([[-0.5,  0. ,  0. ],
+             [ 0. , -0.5,  0. ],
+             [ 0. ,  0. , -0.5]], dtype=float32)
+>>>
+>>> solve(x0, weight)
+DeviceArray([ 0. , -0.5, -1. ], dtype=float32)
+>>>
+>>> solve(x0, weight + 1)
+DeviceArray([-0.5, -1. , -1.5], dtype=float32)
+```
 
 ---
 
