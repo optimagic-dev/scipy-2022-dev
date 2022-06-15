@@ -435,20 +435,34 @@ array([0.0, 0.0])
 
 ---
 
-### Don't expect too much
+### How to choose
 
-- Global optimizers run long
-- Precision is low
-- No guarantee if you function is noisy
-- ...
+
+
+---
+
+
+### Example 1: Non-smooth, 5 Parameters
+
+
+
+---
+
+### Example 2: Smooth, 15 Parameters
+
+- alpine on left, criterion plot on right
+
+---
+
+### Global optimization survival guide
+
+- Do n
+
+
 
 ---
 
 <!-- _class: lead -->
-# Practice Session 6: Multistart vs. global optimizers (10 min)
-
-
----
 
 ### Numerical instability during optimization
 
@@ -469,7 +483,7 @@ array([0.0, 0.0])
 
 ---
 <!-- _class: lead -->
-# Practice Session 7: Scaling of optimization problems (10 min)
+# Practice Session 6: Scaling of optimization problems (10 min)
 
 
 ---
@@ -497,7 +511,7 @@ array([0.0, 0.0])
 ---
 
 <!-- _class: lead -->
-# Practice Session 8: Using JAX derivatives in estimagic (10 min)
+# Practice Session 7: Using JAX derivatives in estimagic (10 min)
 
 
 ---
@@ -528,7 +542,7 @@ array([0.0, 0.0])
 ---
 
 <!-- _class: lead -->
-# Practice Session 9: Vectorized optimization in JAXopt (15 min)
+# Practice Session 8: Vectorized optimization in JAXopt (15 min)
 
 ---
 
