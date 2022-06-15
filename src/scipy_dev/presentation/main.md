@@ -661,11 +661,20 @@ problems = em.get_benchmark_problems(
 - estimagic constraints: handled via reparametrization and bounds
 - nonlinear constraints: handled by some algorithms
 
+
 ---
 
-### What is reparametrization
+### Reparametrization example
 
-- simple example with increasing constraint
+- Assume we want to minimize $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
+- Only defined if $x_1 \leq x_2$. Thus, this constraint should never be violated
+- This is not a simple bound but a linear constraint!
+- Let's solve this with reparametrization:
+    - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
+    - Calculate $argmin_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
+    - Translate the solution back into $x_1$ and $x_2$
+- Easy to get confused and make mistakes when implementing this by hand
+- Estimagic does this for you for many types of constraints
 
 ---
 
