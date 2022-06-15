@@ -17,12 +17,25 @@ def create_gradient_descent_figure(
     return fig, ax
 
 
-def create_curse_of_dimensionality_figure(figsize=(17, 8), marker_size=500):
+def create_curse_of_dimensionality_figure(
+    figsize=(17, 8), marker_size=500, orientation="h"
+):
     fig = plt.figure()
-    for dimension in (1, 2, 3):
-        ax = fig.add_subplot(1, 3, dimension, projection="3d")
-        _plot_curse_of_dimensionality_dimension(dimension, ax, marker_size=marker_size)
-    fig.set_size_inches(*figsize)
+    if orientation == "h":
+        for dimension in (1, 2, 3):
+            ax = fig.add_subplot(1, 3, dimension, projection="3d")
+            _plot_curse_of_dimensionality_dimension(
+                dimension, ax, marker_size=marker_size
+            )
+        fig.set_size_inches(*figsize)
+    elif orientation == "v":
+        for dimension in (1, 2, 3):
+            ax = fig.add_subplot(3, 1, dimension, projection="3d")
+            _plot_curse_of_dimensionality_dimension(
+                dimension, ax, marker_size=marker_size
+            )
+        fig.set_size_inches(*figsize[::-1])
+
     return fig, ax
 
 
@@ -31,7 +44,7 @@ def _get_contour_figure(contour_line_width):
     # data for contour lines
     grid = np.linspace(-0.1, 0.1, num=100)
     x, y = np.meshgrid(grid, grid)
-    z = x**2 + y**2  # sphere
+    z = x ** 2 + y ** 2  # sphere
 
     # figure
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -97,6 +110,10 @@ def _plot_curse_of_dimensionality_dimension(dimension, ax, marker_size):
     ax.axes.set_xlim3d(left=-0.1, right=1.1)
     ax.axes.set_ylim3d(bottom=-0.1, top=1.1)
     ax.axes.set_zlim3d(bottom=-0.1, top=1.1)
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+
 
 
 def _create_points(dimension):
@@ -140,8 +157,9 @@ def _create_alphas(points, dimension):
     return alphas
 
 
-
-def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwarm", figsize=(8,8)):
+def plot_function_3d(
+    func, lower_bound, upper_bound, n_gridpoints, cmap="coolwarm", figsize=(8, 8)
+):
     grid = np.linspace(lower_bound, upper_bound, n_gridpoints)
     x_mesh, y_mesh = np.meshgrid(grid, grid)
     results = []
@@ -153,9 +171,7 @@ def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwar
     fig.set_size_inches(*figsize)
     ax = plt.axes(projection="3d")
     ax.plot_surface(x_mesh, y_mesh, z_mesh, cmap=cmap)
-    ax.contour(
-        x_mesh, y_mesh, z_mesh, levels=30, offset=np.min(z_mesh), cmap=cmap
-    )
+    ax.contour(x_mesh, y_mesh, z_mesh, levels=30, offset=np.min(z_mesh), cmap=cmap)
     # ax.contour3D(x_mesh, y_mesh, z_mesh, 800, cmap='coolwarm')
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -179,7 +195,7 @@ def plot_contour_2d(func, lower_bound, upper_bound, n_gridpoints):
     z_mesh = np.array(results).reshape(x_mesh.shape)
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    ax.contourf(x_mesh, y_mesh, z_mesh, levels=30, cmap='coolwarm', alpha=0.7)
+    ax.contourf(x_mesh, y_mesh, z_mesh, levels=30, cmap="coolwarm", alpha=0.7)
     # add labels and set equal aspect ratio
     ax.set_xlabel("x")
     ax.set_ylabel("y")

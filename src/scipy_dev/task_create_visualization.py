@@ -1,6 +1,7 @@
 import pytask
 import numpy as np
 from scipy_dev.config import BLD
+from scipy_dev.config import SRC
 from scipy_dev.visualizations import create_curse_of_dimensionality_figure
 from scipy_dev.visualizations import create_gradient_descent_figure
 from scipy_dev.visualizations import create_grid_search_figure
@@ -21,11 +22,25 @@ def task_create_gradient_descent_figure(produces):
     fig.savefig(produces, bbox_inches="tight")
 
 
-@pytask.mark.produces(BLD.joinpath("figures", "curse_of_dimensionality.png"))
-def task_create_curse_of_dimensionality_figure(produces):
-    fig, _ = create_curse_of_dimensionality_figure(marker_size=500)
+@pytask.mark.parametrize(
+    "produces, depends_on, orientation",
+    [
+        (
+            BLD.joinpath("figures", f"curse_of_dimensionality_{orient}.png"),
+            SRC.joinpath("visualizations.py"),
+            orient,
+        )
+        for orient in ["h", "v"]
+    ],
+)
+def task_create_curse_of_dimensionality_figure(produces, orientation):
+    fig, _ = create_curse_of_dimensionality_figure(
+        marker_size=500, orientation=orientation
+    )
     fig.tight_layout()
-    fig.savefig(produces, bbox_inches="tight")
+    fig.savefig(
+        produces, bbox_inches="tight", facecolor=fig.get_facecolor(), transparent=True
+    )
 
 
 def alpine(x):
@@ -54,7 +69,6 @@ parametrization = []
 for k, v in inputs.items():
     target = BLD.joinpath("figures", f"{k}.png")
     parametrization.append((target, v["func"], v["bounds"]))
-
 
 
 @pytask.mark.parametrize("produces, func, bounds", parametrization)
