@@ -454,39 +454,79 @@ section.split {
 
 ### `scipy_lbfgsb`
 
--
-
+- Limited memory BFGS with support for bounds
+- BFGS is a method to approximate hessians from multiple gradients
+- Criterion must be differentiable
+- Very fast and scales to a few thousand parameters
+- Beats other BFGS implementations in many benchmarks
+- Low overhead, i.e. works well for fast criterion functions
 
 ---
 
 ### `fides`
 
+- Derivative based trust-region algorithm with support for bounds
+- Developed by Fabian Fröhlich as a Python package
+- Many advanced options to customize the optimization!
+- Criterion must be differentiable
+- Good solution if scipy_lbfgsb picks too extreme parameters that cause numerical overflow
 
 ---
 
-### `nlopt_bobyqa`
+### `nlopt_bobyqa`, `nag_pybobyqa`
 
-
----
-
-### `nlopt_neldermead`
-
----
-
-### `nag_dfols`
-
+- Derivative free trust region algorithm with support for bounds
+- `nlopt` version has less overhead
+- `nag` version has advanced options to deal with noise
+- `nag` version is very sensitive to bad scaling of parameters
+- Good choice for non-differentiable but not too noisy functions
+- Slower than derivative based methods but faster than neldermead
 
 ---
 
-### `scipy_ls_lm`
+### `scipy_neldermead`, `nlopt_neldermead`
 
-- Or other scipy ls. Need to benchmark
+- Very popular direct search method
+- `nlopt` version supports bounds
+- `nlopt` version requires much fewer criterion evaluations in most benchmarks
+- The Nelder-Mead algorithm is never the best choice but also rarely the worst
+- Immune to bad scaling of parameters
 
+---
+
+### `scipy_ls_lm`, `scipy_ls_trf`
+
+- Derivative based optimizers for least squares problems
+- Criterion needs the structure: $F(x) = \sum_i f_i(x)^2$
+- In estimagic, criterion function must return a dictionary:
+
+```python
+def sphere_ls(x):
+    # x are the least squares residuals in the sphere function
+    return {"root_contributions": x, "value": x @ x}
+```
+- `scipy_ls_lm` is better for small problems without bounds
+- `scipy_ls_trf` is better for problems with many parameters
+
+---
+
+### `nag_dfols`, `pounders`
+
+- Derivative free trust region methods for nonlinear least-squares problems
+- Both beat bobyqa for least-squares problems!
+- `nag_dfols` is fastest and usually requires fewest criterion evaluations
+- `nag_dfols` has advanced options to deal with noise
+- `pounders` can do criterion evaluations in parallel
+- Sensitive to bad scaling of parameters
 
 ---
 
 ### `ipopt`
 
+- Interior point optimizer for problems with nonlinear constraints
+- Probably the best open source optimizer for large constrained problems
+- We wrap it via `cyipopt`
+- Difficult to install on windows
 
 ---
 <!-- _class: lead -->
@@ -496,37 +536,106 @@ section.split {
 
 ### What is benchmarking
 
-- highlight that we have a large number of problems
-- cite paper about best practices
-- ...
+- Compare multiple algorithms on functions with known optimum
+- Benchmark functions should be similar to the problem you actually want to solve
+    - similar number of parameters
+    - similar w.r.t. differentiability or noise
+- Benchmark functions should be fast!
+- There are standardized benchmark sets and visualizations
 
 ---
 
 ### Running benchmarks in estimagic
 
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+problems = em.get_benchmark_problems("estimagic")
+optimizers = [
+    "scipy_lbfgsb",
+    "nag_dfols",
+    "nlopt_bobyqa",
+    "scipy_neldermead",
+]
+results = em.run_benchmark(
+    problems=problems,
+    optimize_options=optimizers,
+    n_cores=4,
+    max_criterion_evaluations=1000,
+)
+```
+
+</div>
+<div class=rightcol>
+
+- Multiple benchmark sets
+    - more_wild
+    - estimagic
+    - example
+- Add noise or scaling problems
+- Can pass additional options to govern minimization
+- Benchmarks run in parallel
+
+</div>
 
 ---
 ### Profile plots
 
-- two column slide with normalized and absolute profile plot
-
+<img src="../graphs/benchmark.png" alt="profile_plot" width="900"/>
 
 ---
-
 
 ### Convergence plots
 
+<img src="../graphs/convergence_plot.png" alt="convergence_plot" width="900"/>
+
 ---
 
 
-### Built in benchmark suites and customization of problems
+### Advanced options
 
-- Example
-- Estimagic
-- More-Wild
-- ...
-- How to add noise
-- How to add bad scaling
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+problems = em.get_benchmark_problems(
+    name="example",
+    additive_noise=True,
+    additive_noise_options={
+        "distribution": "normal",
+        "std": 0.2,
+    },
+    scaling=True,
+    scaling_options={
+        "min_scale": 0.1,
+        "max_scale": 1000,
+    }
+)
+```
+
+</div>
+<div class=rightcol>
+
+- Add additive noise
+- Add bad scaling
+- This would be a very difficult problem set
+
+</div>
 
 ---
 
@@ -552,11 +661,20 @@ section.split {
 - estimagic constraints: handled via reparametrization and bounds
 - nonlinear constraints: handled by some algorithms
 
+
 ---
 
-### What is reparametrization
+### Reparametrization example
 
-- simple example with increasing constraint
+- Assume we want to minimize $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
+- Only defined if $x_1 \leq x_2$. Thus, this constraint should never be violated
+- This is not a simple bound but a linear constraint!
+- Let's solve this with reparametrization:
+    - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
+    - Calculate $argmin_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
+    - Translate the solution back into $x_1$ and $x_2$
+- Easy to get confused and make mistakes when implementing this by hand
+- Estimagic does this for you for many types of constraints
 
 ---
 
