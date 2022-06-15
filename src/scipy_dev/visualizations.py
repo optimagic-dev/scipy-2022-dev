@@ -141,7 +141,7 @@ def _create_alphas(points, dimension):
 
 
 
-def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwarm"):
+def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwarm", figsize=(8,8)):
     grid = np.linspace(lower_bound, upper_bound, n_gridpoints)
     x_mesh, y_mesh = np.meshgrid(grid, grid)
     results = []
@@ -150,6 +150,7 @@ def plot_function_3d(func, lower_bound, upper_bound, n_gridpoints, cmap="coolwar
     z_mesh = np.array(results).reshape(x_mesh.shape)
 
     fig = plt.figure()
+    fig.set_size_inches(*figsize)
     ax = plt.axes(projection="3d")
     ax.plot_surface(x_mesh, y_mesh, z_mesh, cmap=cmap)
     ax.contour(

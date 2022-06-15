@@ -11,20 +11,21 @@ from scipy_dev.visualizations import plot_function_3d
 def task_create_grid_search_figure(produces):
     fig, _ = create_grid_search_figure(contour_line_width=3)
     fig.tight_layout()
-    fig.savefig(produces)
+    fig.savefig(produces, bbox_inches="tight")
 
 
 @pytask.mark.produces(BLD.joinpath("figures", "gradient_descent.png"))
 def task_create_gradient_descent_figure(produces):
     fig, _ = create_gradient_descent_figure(contour_line_width=3)
     fig.tight_layout()
-    fig.savefig(produces)
+    fig.savefig(produces, bbox_inches="tight")
 
 
 @pytask.mark.produces(BLD.joinpath("figures", "curse_of_dimensionality.png"))
 def task_create_curse_of_dimensionality_figure(produces):
     fig, _ = create_curse_of_dimensionality_figure(marker_size=500)
-    fig.savefig(produces)
+    fig.tight_layout()
+    fig.savefig(produces, bbox_inches="tight")
 
 
 def alpine(x):
@@ -60,4 +61,4 @@ for k, v in inputs.items():
 def task_create_3d_plots(produces, func, bounds):
     fig = plot_function_3d(func, bounds[0], bounds[1], 50)
     fig.tight_layout()
-    fig.savefig(produces)
+    fig.savefig(produces, bbox_inches="tight")
