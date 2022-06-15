@@ -8,6 +8,7 @@ from scipy_dev.visualizations import create_grid_search_figure
 from scipy_dev.visualizations import plot_function_3d
 
 
+@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
 @pytask.mark.produces(BLD.joinpath("figures", "grid_search.png"))
 def task_create_grid_search_figure(produces):
     fig, _ = create_grid_search_figure(contour_line_width=3)
@@ -15,11 +16,12 @@ def task_create_grid_search_figure(produces):
     fig.savefig(produces, bbox_inches="tight")
 
 
+@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
 @pytask.mark.produces(BLD.joinpath("figures", "gradient_descent.png"))
 def task_create_gradient_descent_figure(produces):
     fig, _ = create_gradient_descent_figure(contour_line_width=3)
     fig.tight_layout()
-    fig.savefig(produces, bbox_inches="tight")
+    fig.savefig(produces)
 
 
 @pytask.mark.parametrize(
