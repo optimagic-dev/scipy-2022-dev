@@ -100,8 +100,6 @@ University of Bonn
 ---
 
 ### Brute force vs. smarter algorithm
-
-<!-- Paper 1 -->
 <!-- _class: split -->
 <div class=leftcol>
 
@@ -818,9 +816,14 @@ problems = em.get_benchmark_problems(
 
 
 ---
-
-### What is JAXopt and when to use it
 <!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 600px 500px;
+    grid-template-areas:
+        "leftpanel rightpanel";
+}
+</style>
 <div class=leftcol>
 
 #### What is JAXopt
@@ -843,7 +846,7 @@ problems = em.get_benchmark_problems(
 
     - But many
 
-- Robustness to parameters
+- Robustness to hyper-parameters
 
 </div>
 
@@ -852,24 +855,43 @@ problems = em.get_benchmark_problems(
 ---
 
 ### Simple optimization in JAXopt
+<!-- _class: split -->
+<div class=leftcol>
 
 ```python
 >>> import jax
 >>> import jax.numpy as jnp
 >>> from jaxopt import LBFGS
->>>
->>> x0 = jnp.arange(3, dtype=float)
->>> weight = jnp.arange(3, dtype=float)
->>>
->>> def criterion(x, weight):
->>>     return jnp.vdot(x, x + weight)
->>>
+
+>>> x0 = jnp.array([1.0, 2, 3])
+>>> shift = x0.copy()
+
+>>> def criterion(x, shift):
+...     return jnp.vdot(x, x + shift)
+
 >>> solver = LBFGS(fun=criterion)
->>>
->>> result = solver.run(init_params=x0, weight=weight)
+
+>>> result = solver.run(init_params=x0, shift=shift)
 >>> result.params
-DeviceArray([ 0. , -0.5, -1. ], dtype=float32)
+DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 ```
+
+</div>
+<div class=rightcol>
+
+<br>
+
+- import solver
+
+- initialize solver with criterion
+
+- run solver with starting parameters
+
+- pass additional arguments of criterion to run method
+
+</div>
+
+
 
 ---
 
@@ -880,60 +902,77 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float32)
 >>>     return x + y
 >>> x, y = jnp.ones((2, 3)), jnp.ones((4, 5))
 >>> add(x, y)
-
--> 1441       raise TypeError(f'{name} got incompatible shapes for broadcasting: '
-   1442                       f'{", ".join(map(str, map(tuple, shapes)))}.')
-   1443     result_shape.append(non_1s.pop() if non_1s else 1)
-   1444 return tuple(result_shape)
-
-TypeError: add got incompatible shapes for broadcasting: (2, 3), (4, 5).
 ```
 
 ---
 
-### Vmap in JAX (2)
-
----
-
+<!-- _class: split -->
 ### Vectorized optimization in JAXopt
+
+<div class=leftcol>
 
 ```python
 >>> from jax import jit, vmap
->>>
->>> def solve(x, weight):
->>>     return solver.run(init_params=x, weight=weight).params
->>>
+
+>>> def solve(x, shift):
+...     return solver.run(init_params=x, shift=shift).params
+
 >>> batch_solve = jit(vmap(solve, in_axes=(None, 0)))
->>>
->>> weights = jnp.arange(6, dtype="float64").reshape(2, 3)
->>> weights
-DeviceArray([[0., 1., 2.],
-             [3., 4., 5.]], dtype=float32)
->>>
+>>> weights = jnp.array([
+        [0.0, 1.0, 2.0],
+        [3.0, 4.0, 5.0]
+    ])
+
 >>> batch_solve(x0, weights)
 DeviceArray([[ 0. , -0.5, -1. ],
-             [-1.5, -2. , -2.5]], dtype=float32)
+             [-1.5, -2. , -2.5]], dtype=float64)
 ```
+</div>
+<div class=rightcol>
 
+- import `jit` and `vmap`
+
+- define wrapper around solve
+
+- call vmap on wrapper
+
+    - `in_axes=(None, 0)` means that we map over the 0-axis of the second argument
+
+    - call `jit` at the end
+
+</div>
 
 ---
 
-### Differentiate an optimizer in JAXopt
+<!-- _class: split -->
+### Differentiate a solution in JAXopt
+
+<div class=leftcol>
 
 ```python
 >>> from jax import jacobian
->>>
+
 >>> jacobian(solve, argnums=1)(x0, weight)
 DeviceArray([[-0.5,  0. ,  0. ],
              [ 0. , -0.5,  0. ],
-             [ 0. ,  0. , -0.5]], dtype=float32)
->>>
+             [ 0. ,  0. , -0.5]], dtype=float64)
+
 >>> solve(x0, weight)
-DeviceArray([ 0. , -0.5, -1. ], dtype=float32)
->>>
+DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
+
 >>> solve(x0, weight + 1)
-DeviceArray([-0.5, -1. , -1.5], dtype=float32)
+DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ```
+</div>
+<div class=rightcol>
+
+<br>
+
+- import `jacobian` or `grad`
+
+- use `argnums` to specify by which argument we differentiate
+
+</div>
 
 ---
 
