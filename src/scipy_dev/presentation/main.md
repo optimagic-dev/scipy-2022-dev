@@ -956,7 +956,7 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 ---
 
 <!-- _class: split -->
-### Vectorized optimization in JAXopt
+### Vectorize an optimization in JAXopt
 
 <div class=leftcol>
 
