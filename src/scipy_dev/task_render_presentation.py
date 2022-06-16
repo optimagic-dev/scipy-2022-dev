@@ -9,7 +9,7 @@ main_files = ["main"]
 
 for file in main_files:
 
-    for output_format in ["html"]:
+    for output_format in ["pdf"]:
 
         kwargs = {
             "depends_on": {

@@ -7,46 +7,43 @@ channels:
 dependencies:
   - python ==3.9
   - pip
-  - setuptools_scm
-  - toml
 
   # Dependencies
-  - pytask >=0.2.3
   - pandas
   - numpy
   - scipy
   - jupyterlab
+  - ipython
   - seaborn
   - jax
   - estimagic
-  - python-kaleido
 
   # Algorithms
   - nlopt
   - pygmo
-  - cyipopt
 
-  # Misc
+  # Misc Start
+  - setuptools_scm
+  - toml
+  - pytask >=0.2.3
   - black
   - nb_black
-  - ipython
   - pre-commit
   - pdbpp
   - pytest
   - pytest-cov
   - pytest-xdist
   - tox-conda
-
-  # Reproducibility
   - conda-lock
+  # Misc End
 
   - pip:
     - black
     - blackcellmagic
-    - pre-commit
-    - jaxopt
+    - kaleido
 
-    # Algorithms
+    # Pip Algorithms
+    - jaxopt
     - Py-BOBYQA
     - DFO-LS
     - fides==0.7.4

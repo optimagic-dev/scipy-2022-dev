@@ -27,6 +27,10 @@ def task_copy_environment_file(depends_on, produces):
     # change environment name
     lines[0] = "name: scipy_estimagic"
 
+    # find and delete misc
+    indices = [i for i, e in enumerate(lines) if "Misc" in e]
+    del lines[indices[0] : indices[1] + 1]
+
     with open(produces["unix"], "w") as f:
         f.writelines(lines)
 
