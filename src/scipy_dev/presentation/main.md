@@ -39,9 +39,8 @@ University of Bonn
 
 - Website: [janosg.com](https://janosg.com)
 - GitHub: [janosg](https://github.com/janosg/)
-- Submitted PhD thesis
 - Original author of estimagic
-- Looking for interesting jobs soon
+- Submitted PhD thesis, looking for interesting jobs soon
 
 </div>
 <div class=rightcol>
@@ -50,7 +49,7 @@ University of Bonn
 
 - Website: [tmensinger.com](https://tmensinger.com)
 - GitHub: [timmens](https://github.com/timmens)
-- Core contributor of estimagic
+- estimagic core contributor
 - PhD student in Econ, University of Bonn
 
 
@@ -77,6 +76,11 @@ University of Bonn
 ### Example problem
 
 <!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 700px 400px;
+}
+</style>
 
 <div class=leftcol>
 
@@ -92,7 +96,7 @@ University of Bonn
 
 <div class=rightcol>
 
-<img src="../../../bld/figures/sphere.png" alt="sphere" width="500" class="center"/>
+<img src="../../../bld/figures/sphere.png" alt="sphere" width="450" class="center"/>
 
 
 </div>
@@ -139,6 +143,7 @@ table {
 }
 </style>
 
+
 | Number of <br /> Dimensions | Runtime (1 ms per evaluation, <br /> 100 points per dimension) |
 | ----------------------------| ---------------------------------------------------------------|
 | 1                           | 100 ms                                                         |
@@ -153,19 +158,36 @@ table {
 
 ---
 
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+    grid-template-areas:
+        "leftpanel rightpanel";
+}
+</style>
 
-### What's (not) in this talk
+
+<div class=leftcol>
+
+### In this talk
+
+- Nonlinear optimization with continuous parameters
+- Linear and nonlinear constraints
+- Global optimization
+- Diagnostics and strategies for difficult probles
+
+</div>
+<div class=rightcol>
+
+### Not Covered
+
+- Linear programming
+- Mixed integer programming
+- Stochastic gradient descent
 
 
-- Covered
-    - Nonlinear optimization of continuous parameters
-    - Linear and nonlinear constraints
-    - Global optimization
-    - Diagnostics and strategies for difficult probles
-- Not covered
-    - Linear programming
-    - Mixed integer programming
-    - Stochastic gradient descent
+</div>
 
 
 ---
@@ -197,10 +219,12 @@ array([0.0, 0.0])
 
 - `minimize` as unified interface to 14 local optimizers
     - some support bounds
-    - some support (non)linear constraints
-- Parameters are 1d numpy arrays
-- Numerical derivatives are calculated if necessary
+    - some support constraints
+- Parameters are 1d arrays
 - Maximization is done by minimizing $- f(x)$
+- Different interfaces for:
+    - global optimization
+    - nonlinear least-squares
 
 ---
 
@@ -212,19 +236,24 @@ array([0.0, 0.0])
 
 ### Shortcomings of scipy.optimize
 
-- Very limited number of algorithms
-- If optimization crashes, all information is lost
+- Very few algorithms
 - No parallelization
-- Maximization via minimize is error-prone and cumbersome
-- No diagnostics tools (e.g. visualization of histories)
-- No feedback before optimization ends
-- No built-in multistart, benchmarking, scaling, reparametrization or logging
+- Maximization via sign flipping
+- No diagnostics tools
+- No feedback before optimization or in case of crash
+- No built-in multistart, benchmarking, scaling, or logging
 - Parameters are 1d numpy arrays
 
 ---
 
 
 ### Examples from real projects I
+
+<style scoped>
+section code {
+  font-size: 20px;
+}
+</style>
 
 ```python
 def parse_parameters(x):
@@ -247,6 +276,12 @@ def parse_parameters(x):
 ---
 
 ### Examples from real projects II
+
+<style scoped>
+section code {
+  font-size: 20px;
+}
+</style>
 
 ```python
 >>> scipy.optimize.minimize(func, x0)
@@ -273,7 +308,8 @@ LinAlgError: Singular matrix
 
 ### What is estimagic?
 
-- Library for numerical optimization and nonlinear estimation
+- Library for difficult numerical optimization
+- Additional tools for nonlinear estimation
 - Wraps many other optimizer libraries:
     - Scipy, Nlopt, TAO, Pygmo, ...
 - Harmonized interface
@@ -655,13 +691,26 @@ problems = em.get_benchmark_problems(
 # Third hour
 ==================================================================================== -->
 
+
+### Constraints in estimagic
+
+- Harmonized way to specify bounds, linear and nonlinear constraints
+
+
+
 ### Terminology of constraints in estimagic
 
-- bounds: handled by most algorithms
-- estimagic constraints: handled via reparametrization and bounds
-- nonlinear constraints: handled by some algorithms
-
-
+- bounds: $min_{x} f(x)$ s.t. $l \leq x \leq u$
+    - handled by most algorithms
+    - guaranteed to be fulfilled during optimization
+- estimagic constraints:
+    - handled via reparametrization and bounds
+    - multiple types, e.g. `"fixed"`, "increasing", "covariance", "probability"
+    - `"linear"` equality and inequality constraints
+    - guaranteed to be fulfilled during optimization
+- nonlinear constraints: $min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
+    - handled by some algorithms
+    - can be violated during optimization
 ---
 
 ### Reparametrization example
