@@ -1,3 +1,4 @@
+import re
 import shutil
 import time
 
@@ -57,5 +58,35 @@ for dep in dependencies:
 
     @pytask.mark.task(id=dep.name, kwargs=kwargs)
     def task_copy_public_directory_file(depends_on, produces):
+        shutil.copyfile(depends_on, produces)
+        time.sleep(0.1)  # otherwise pytask won't find the product
+
+
+# ======================================================================================
+# copy exercise notebooks
+# ======================================================================================
+
+
+dependencies = list(SRC.joinpath("notebooks").rglob("*"))
+# delete checkpoint files
+dependencies = [d for d in dependencies if ".ipynb_checkpoints" not in str(d)]
+# only select notebooks
+dependencies = [d for d in dependencies if d.suffix == ".ipynb"]
+# match only the exercise and solution notebooks
+dependencies = [d for d in dependencies if re.match("(^0[0-9])", d.name)]
+
+for dep in dependencies:
+
+    if "solutions" in str(dep):
+        produces = PUBLIC.joinpath("exercises", "solutions", dep.name)
+        _id = dep.name + "-solutions"
+    else:
+        produces = PUBLIC.joinpath("exercises", dep.name)
+        _id = dep.name
+
+    kwargs = {"depends_on": dep, "produces": produces}
+
+    @pytask.mark.task(id=_id, kwargs=kwargs)
+    def task_copy_notebooks(depends_on, produces):
         shutil.copyfile(depends_on, produces)
         time.sleep(0.1)  # otherwise pytask won't find the product
