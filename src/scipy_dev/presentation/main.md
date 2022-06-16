@@ -768,11 +768,12 @@ array([0., 0., 0., 0., 0.])
 
 ### The estimagic Team
 
+
 <style scoped>
 .center {
   margin-left: auto;
   margin-right: auto;
-  font-size: 25px;
+  font-size: 24px;
 }
 
 </style>
@@ -781,39 +782,50 @@ array([0., 0., 0., 0., 0.])
 <table class="center">
     <tr>
         <th>
-            <img src="../graphs/janos.jpg" alt="janos" width="200"/>
+            <img src="../graphs/janos.jpg" alt="janos" width="190"/>
             <br>
             Janos
         </th>
         <th>
-            <img src="../graphs/tim.jpeg" alt="tim" width="200"/>
+            <img src="../graphs/tim.jpeg" alt="tim" width="190"/>
             <br>
             Tim
         </th>
         <th>
-            <img src="../graphs/klara.jpg" alt="klara" width="200"/>
+            <img src="../graphs/klara.jpg" alt="klara" width="190"/>
             <br>
             Klara
         </th>
     </tr>
     <tr>
         <th>
-            <img src="../graphs/sebi.jpg" alt="sebastian" width="200"/>
+            <img src="../graphs/sebi.jpg" alt="sebastian" width="190"/>
             <br>
             Sebastian
         </th>
         <th>
-            <img src="../graphs/tobi.png" alt="tobi" width="200"/>
+            <img src="../graphs/tobi.png" alt="tobi" width="190"/>
             <br>
             Tobias
         </th>
         <th>
-            <img src="../graphs/hmg.jpg" alt="hmg" width="200"/>
+            <img src="../graphs/hmg.jpg" alt="hmg" width="190"/>
             <br>
             Hans-Martin
         </th>
     </tr>
 </table>
+
+---
+
+### Thanks to
+
+- All [contributors](https://estimagic.readthedocs.io/en/stable/credits.html#contributors) to estimagic
+- [Kenneth Judd](https://kenjudd.org/) for feedback and funding of a research visit
+- [Gregor Reich](https://www.linkedin.com/in/gregor-reich-707a4358/?originalSubdomain=ch) for feedback
+- All authors of the amazing algorithms we are wrapping
+- The University of Bonn and [TRA-1 Modelling](https://www.uni-bonn.de/en/research-and-teaching/research-profile/transdisciplinary-research-areas/tra-1-modelling/about?set_language=en) for funding
+- [Collaborative Research Center Transregio 224](https://www.crctr224.de/en) for funding
 
 ---
 <!-- ===================================================================================
@@ -1061,6 +1073,130 @@ problems = em.get_benchmark_problems(
     - can be violated during optimization
 ---
 
+
+### How to specify bounds
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+#### Params as numpy array
+
+```python
+>>> def sphere(x):
+...     return x @ x
+
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(3) + 1,
+...     lower_bounds=np.ones(3),
+...     algorithm="scipy_lbfgsb",
+... )
+>>> res.params
+array([1., 1., 1.])
+```
+
+</div>
+<div class=rightcol>
+
+#### Params as DataFrame
+
+<style scoped>
+table {
+  font-size: 28px;
+}
+
+.center {
+  margin-left: 100px;
+  margin-right: auto;
+}
+
+</style>
+
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+      <th>lower_bound</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>a</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>c</th>
+      <td>3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>d</th>
+      <td>4</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+
+
+</div>
+
+---
+
+### How to specify bounds for pytrees
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 650px 450px;
+
+}
+</style>
+
+<div class=leftcol>
+
+
+```python
+params = {"x": np.arange(3), "intercept": 3}
+
+def criterion(p):
+    return p["x"] @ p["x"] + p["intercept"]
+
+res = em.minimize(
+    criterion,
+    params=params,
+    algorithm="scipy_lbfgsb",
+    lower_bounds={"intercept": -2},
+)
+
+```
+
+</div>
+<div class=rightcol>
+
+- Enough to specify the subset of params that actually has bounds
+- We try to match your bounds with params
+- Raise `InvalidBoundsError` in case of ambiguity
+
+</div>
+
+
+---
+
 ### Reparametrization example
 
 - Example:$min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
@@ -1080,7 +1216,7 @@ problems = em.get_benchmark_problems(
 - Find valid probabilities
 - Linear constraints (as long as there are not too many)
     - $min_x f(x) s.t. A_1 x = 0, A_2 x \leq 0$
-- #### Guaranteed to be fulfilled during optimization
+- **Guaranteed to be fulfilled during optimization**
 
 ---
 
@@ -1093,32 +1229,12 @@ problems = em.get_benchmark_problems(
     - forget to adjust derivative
     - confuse directions
     - use non-differentiable transformations
-- #### Estimagic does reparametrizations for you!
-- #### Completely hides transformed x
+- **Estimagic does reparametrizations for you!**
+- **Completely hides transformed x**
 
 ---
-
-### Example problem in two flavors
-
-- take the one from estimagic docs
-- dict version
-- df version
-
----
-
-
-### How to specify bounds
-
-- params df
-- numpy array
-- dict (subset selection!)
-
----
-
 
 ### Fixing parameters
-
-- two columns, dict and df version
 
 
 ---
@@ -1130,6 +1246,7 @@ problems = em.get_benchmark_problems(
 
 
 ### Nonlinear constraints
+
 
 
 ---
@@ -1422,6 +1539,11 @@ section.split {
 
 ### Features we left out
 
+- [Error handling](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_handle_errors_during_optimization.html)
+- [Dashboard](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_the_dashboard.html)
+- [Log reading](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_logging.html)
+- [Nonlinear constraints](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html)
+- Advanced [parameter selection](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html#how-to-select-the-parameters) for constraints
 
 ---
 
@@ -1642,17 +1764,3 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ---
 
 ### Summary
-
-
----
-
-
-
-<!-- ===================================================================================
-# REFERENCES
-==================================================================================== -->
-
-### References
-
-- JAX Opt
-- scipy.optimize
