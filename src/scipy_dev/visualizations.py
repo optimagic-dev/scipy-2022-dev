@@ -1,5 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+from estimagic import criterion_plot
+from estimagic import minimize
+from estimagic import params_plot
+
+
+def create_criterion_plot():
+    res = _get_optimize_result_for_criterion_and_profile_plot()
+    fig = criterion_plot(res, max_evaluations=300)
+    return fig
+
+
+def create_params_plot():
+    res = _get_optimize_result_for_criterion_and_profile_plot()
+    fig = params_plot(res, max_evaluations=300, selector=lambda params: params["c"])
+    return fig
 
 
 def create_grid_search_figure(contour_line_width=3, cmap="Blues"):
@@ -55,7 +71,7 @@ def _get_contour_figure(contour_line_width, cmap):
     # data for contour lines
     grid = np.linspace(-0.1, 0.1, num=100)
     x, y = np.meshgrid(grid, grid)
-    z = np.sqrt(x ** 2 + y ** 2)  # sphere
+    z = np.sqrt(x**2 + y**2)  # sphere
 
     # figure
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -211,3 +227,16 @@ def plot_contour_2d(func, lower_bound, upper_bound, n_gridpoints):
     ax.set_ylabel("y")
     ax.set_aspect(aspect="equal")
     return fig
+
+
+def _get_optimize_result_for_criterion_and_profile_plot():
+    def dict_sphere(params):
+        return params["a"] ** 2 + params["b"] ** 2 + (params["c"] ** 2).sum()
+
+    res = minimize(
+        criterion=dict_sphere,
+        params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])},
+        algorithm="scipy_neldermead",
+    )
+
+    return res

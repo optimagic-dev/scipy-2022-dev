@@ -400,16 +400,72 @@ section.split {
 
 ### OptimizeResult
 
+```python
+>>> res = em.minimize(dict_sphere, params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])}, algorithm="scipy_neldermead")
+>>> res
+Minimize with 5 free parameters terminated successfully after 805 criterion evaluations and 507 iterations.
 
+The value of criterion improved from 30.0 to 1.6760003634613059e-16.
+
+The scipy_neldermead algorithm reported: Optimization terminated successfully.
+
+Independent of the convergence criteria used by scipy_neldermead, the strength of convergence can be
+assessed by the following criteria:
+                             one_step     five_steps
+relative_criterion_change  1.968e-15***  2.746e-15***
+relative_params_change     9.834e-08*    1.525e-07*
+absolute_criterion_change  1.968e-16***  2.746e-16***
+absolute_params_change     9.834e-09**   1.525e-08*
+
+(***: change <= 1e-10, **: change <= 1e-8, *: change <= 1e-5. Change refers to a change between accepted
+steps. The first column only considers the last step. The second column considers the last five steps.)
+```
 
 ---
+
+<!-- _class: split -->
 
 ### Criterion plot
 
+<div class=leftcol>
+
+```python
+from estimagic import criterion_plot
+
+criterion_plot(res, max_evaluations=300)
+```
+
+</div>
+<div class=rightcol>
+
+![](../../../bld/figures/criterion_plot.png)
+
+</div>
+
 ---
+<!-- _class: split -->
 
 ### Params plot
+<div class=leftcol>
 
+
+```python
+from estimagic import params_plot
+
+params_plot(
+    res,
+    max_evaluations=300,
+    selector=lambda params: params["c"],
+)
+```
+
+
+</div>
+<div class=rightcol>
+
+![](../../../bld/figures/params_plot.png)
+
+</div>
 
 ---
 
@@ -418,42 +474,282 @@ section.split {
 
 ---
 
-### Constraints via reparametrizations
+<!-- _class: split -->
 
+### Constraints via reparametrizations
+<div class=leftcol>
+
+```python
+>>> res = minimize(
+...     criterion=sphere,
+...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints=[{
+...         "loc": [0, 1, 2],
+...         "type": "probability"
+...     }],
+>>> )
+
+>>> res.params
+array([0.33334, 0.33333, 0.33333, -0., 0.])
+```
+</div>
+<div class=rightcol>
+
+- constraints is a list of dicts
+- specify subset of parameters via `loc`, `query` or `selector`
+- specify type of constraint
+    - linear
+    - probability
+    - covariance
+    - ...
+
+</div>
 
 ---
 
+<!-- _class: split -->
+
 ### Closed-form or parallel numerical derivatives
+<div class=leftcol>
+
+```python
+>>> def sphere_gradient(params):
+...     return 2 * params
+
+>>> minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     derivative=sphere_gradient,
+... )
+
+>>> minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     numdiff_options={"n_cores": 6},
+... )
+```
+
+</div>
+
+<div class=rightcol>
+
+- Numerical derivatives are calculated if closed-form is not available
+
+</div>
 
 
 ---
 
 ### There is maximize
 
+```python
+>>> from estimagic import maximize
+
+>>> def upside_down_sphere(params):
+...     return -params @ params
+
+>>> res = maximize(
+...     criterion=upside_down_sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgs",
+... )
+>>> res.params
+array([ 0.,  0.,  0.,  0., -0.])
+```
+
 
 ---
+
+<!-- _class: split -->
 
 ### Built in multistart framework
+<div class=leftcol>
+
+
+```python
+>>> res = minimize(
+...     criterion=sphere,
+...     params=np.arange(10),
+...     algorithm="scipy_neldermead",
+...     soft_lower_bounds=np.full(10, -5),
+...     soft_upper_bounds=np.full(10, 15),
+...     multistart=True,
+...     multistart_options={
+...         "convergence.max_discoveries": 5
+...     },
+... )
+>>> res.params
+array([0.,  0., 0., 0.,  0., 0.,  0., 0., 0., 0.])
+```
+
+
+</div>
+<div class=rightcol>
+
+- Turn local optimizers global
+
+</div>
 
 
 ---
 
-### Least squares optimizers
+<!-- _class: split -->
+
+### Least-square optimizers
+
+<div class=leftcol>
+
+```python
+>>> def general_sphere(params):
+...     contribs = params**2
+...     out = {
+...         "root_contributions": params,
+...         "contributions": contribs,
+...         "value": contribs.sum(),
+...     }
+...     return out
+
+>>> res = minimize(
+...     criterion=general_sphere,
+...     params=np.arange(5),
+...     algorithm="pounders",
+... )
+>>> res.params
+array([0., 0., 0., 0., 0.])
+```
+
+</div>
+
+<div class=rightcol>
+
+- Exploit structure of the problem
+- Common structures
+    - least-square
+    - sum (log-likelihood)
+
+</div>
 
 
 ---
+
+<!-- _class: split -->
 
 ### Logging and Dashboard
 
+<div class=leftcol>
+
+```python
+>>> res = minimize(
+...    criterion=sphere,
+...    params=np.arange(5),
+...    algorithm="scipy_lbfgsb",
+...    logging="my_log.db",
+...    log_options={"if_database_exists": "replace"},
+... )
+
+>>> from estimagic import OptimizeLogReader
+
+>>> reader = OptimizeLogReader("my_log.db")
+>>> reader.read_history().keys()
+dict_keys(['params', 'criterion', 'runtime'])
+```
+
+</div>
+
+<div class=rightcol>
+
+- Store progress of your optimization
+- Read log file
+- Plot log data
+
+</div>
+
 
 ---
 
+<!-- _class: split -->
+
 ### Harmonized `algo_options`
+
+<div class=leftcol>
+
+```python
+>>> algo_options = {
+...     "convergence.relative_criterion_tolerance": 1e-9,
+...     "stopping.max_iterations": 100_000,
+... }
+
+>>> res = minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     algo_options=algo_options,
+... )
+>>> res.params
+array([0., 0., 0., 0., 0.])
+```
+
+</div>
+
+<div class=rightcol>
+
+- Harmonized `algo_options`
+- Convergence criteria, tuning parameters, ...
+
+</div>
 
 ---
 
 ### The estimagic Team
 
+<style scoped>
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 25px;
+}
+</style>
+
+
+<table class="center">
+    <tr>
+        <th>
+            <img src="../graphs/janos.jpg" alt="janos" width="200"/>
+            <br>
+            Janos
+        </th>
+        <th>
+            <img src="../graphs/tim.jpeg" alt="tim" width="200"/>
+            <br>
+            Tim
+        </th>
+        <th>
+            <img src="../graphs/sebi.jpg" alt="sebastian" width="200"/>
+            <br>
+            Sebastian
+        </th>
+    </tr>
+    <tr>
+        <th>
+            <img src="../graphs/klara.jpg" alt="klara" width="200"/>
+            <br>
+            Klara
+        </th>
+        <th>
+            <img src="../graphs/tobi.png" alt="tobi" width="200"/>
+            <br>
+            Tobias
+        </th>
+        <th>
+            <img src="../graphs/hmg.jpg" alt="hmg" width="200"/>
+            <br>
+            HMG
+        </th>
+    </tr>
+</table>
 
 ---
 <!-- ===================================================================================

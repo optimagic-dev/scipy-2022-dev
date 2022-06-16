@@ -1,11 +1,27 @@
-import pytask
 import numpy as np
+import pytask
 from scipy_dev.config import BLD
 from scipy_dev.config import SRC
+from scipy_dev.visualizations import create_criterion_plot
 from scipy_dev.visualizations import create_curse_of_dimensionality_figure
 from scipy_dev.visualizations import create_gradient_descent_figure
 from scipy_dev.visualizations import create_grid_search_figure
+from scipy_dev.visualizations import create_params_plot
 from scipy_dev.visualizations import plot_function_3d
+
+
+@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
+@pytask.mark.produces(BLD.joinpath("figures", "criterion_plot.png"))
+def task_create_criterion_plot(produces):
+    fig = create_criterion_plot()
+    fig.write_image(produces)
+
+
+@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
+@pytask.mark.produces(BLD.joinpath("figures", "params_plot.png"))
+def task_create_params_plot(produces):
+    fig = create_params_plot()
+    fig.write_image(produces)
 
 
 @pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
@@ -51,13 +67,13 @@ def alpine(x):
 
 
 def ackley(x, a=20, b=0.2, c=2 * np.pi):
-    temp = -a * np.exp(-b * np.sqrt(np.mean(x ** 2)))
+    temp = -a * np.exp(-b * np.sqrt(np.mean(x**2)))
     out = temp - np.exp(np.mean(np.cos(c * x))) + a + np.exp(1)
     return out
 
 
 def sphere(x):
-    out = np.sum(x ** 2)
+    out = np.sum(x**2)
     return out
 
 
