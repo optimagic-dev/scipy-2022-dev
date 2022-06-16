@@ -11,8 +11,8 @@
 1. [Exercises](#exercises)
 1. [Troubleshooting](#troubleshooting)
 
-> **Warning** Update your conda environment before the tutorial to make sure that the
-> most recent versions are installed.
+> **Warning** Please pull the repo and update your conda environment before the tutorial
+> to make sure that the most recent versions are installed.
 
 ## Installation
 

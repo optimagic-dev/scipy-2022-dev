@@ -202,7 +202,7 @@ section.split {
 >>> from scipy.optimize import minimize
 
 >>> def sphere(x):
->>>     return np.sum(x ** 2)
+...     return np.sum(x ** 2)
 
 >>> x0 = np.ones(2)
 >>> res = minimize(f, x0)
@@ -319,7 +319,7 @@ LinAlgError: Singular matrix
 <!-- _class: split -->
 <style scoped>
 section.split {
-    grid-template-columns: 550px 550px;
+    grid-template-columns: 650px 450px;
 }
 </style>
 
@@ -329,13 +329,13 @@ section.split {
 >>> import estimagic as em
 
 >>> def sphere(x):
->>>    return np.sum(x ** 2)
+...    return np.sum(x ** 2)
 
 >>> res = em.minimize(
->>>     criterion=sphere,
->>>     params=np.arange(5),
->>>     algorithm="scipy_lbfgsb",
->>> )
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+... )
 
 >>> res.params
 array([ 0., -0., -0., -0., -0.])
@@ -343,19 +343,15 @@ array([ 0., -0., -0., -0., -0.])
 </div>
 <div class=rightcol>
 
-- There is also `maximize`
-- Supports all scipy algorithms
-    - `"scipy_neldermead"`
-    - `"scipy_powell`
-    - `"scipy_bfgs`
-    - `"scipy_truncated_newton"`
-    - ...
+- No default algorithm
+- Many optional arguments scipy does not have
 
 </div>
 
 ---
 
-### Params can be anything
+
+### Params can be (almost) anything
 
 <!-- _class: split -->
 <style scoped>
@@ -368,15 +364,15 @@ section.split {
 
 ```python
 >>> def dict_sphere(x):
->>>     out = (x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
->>>     return out
+...     out = x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
+...     return out
 
 
->>> res = minimize(
->>>     criterion=dict_sphere,
->>>     params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])},
->>>     algorithm="scipy_powell",
->>> )
+>>> res = em.minimize(
+...     criterion=dict_sphere,
+...     params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])},
+...     algorithm="scipy_powell",
+... )
 
 >>> res.params
 {'a': 0.,
@@ -398,7 +394,7 @@ section.split {
 
 ---
 
-### OptimizeResult
+### OptimizeResult is very informative
 
 ```python
 >>> res = em.minimize(dict_sphere, params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])}, algorithm="scipy_neldermead")
@@ -423,17 +419,31 @@ steps. The first column only considers the last step. The second column consider
 
 ---
 
+### OptimizeResult has useful attributes
+
+```python
+>>> res.criterion
+.0
+>>> res.n_criterion_evaluations
+805
+>>> res.success
+True
+>>> res.message
+'Optimization terminated successfully.'
+>>> res.history.keys():
+dict_keys(['params', 'criterion', 'runtime'])
+```
+
+---
+
 <!-- _class: split -->
 
 ### Criterion plot
 
-
 <div class=leftcol>
 
 ```python
-from estimagic import criterion_plot
-
-criterion_plot(res, max_evaluations=300)
+em.criterion_plot(res, max_evaluations=300)
 ```
 <img src="../../../bld/figures/criterion_plot.png" alt="criterion" width="500"
 style="display: block;"/>
@@ -442,9 +452,10 @@ style="display: block;"/>
 </div>
 <div class=rightcol>
 
-- `res` can be a list
-- many options
-    - stack multistart
+- First argument can be a `OptimizeResult`, path to log file or dictionary
+containing these as values
+- `monotone=True` shows the current best value
+- `max_evaluations` sets range of x-axis
 
 </div>
 
@@ -452,40 +463,50 @@ style="display: block;"/>
 <!-- _class: split -->
 
 ### Params plot
+
+<style scoped>
+section.split {
+    grid-template-columns: 450px 650px;
+}
+</style>
+
 <div class=leftcol>
 
 
 ```python
-from estimagic import params_plot
-
 params = {
     "a": 0,
     "b": 1,
     "c": pd.Series([2, 3, 4])
 }
-
-params_plot(
+em.params_plot(
     res,
     max_evaluations=300,
-    selector=lambda params: params["c"],
+    selector=lambda x: x["c"],
 )
 ```
-
 
 </div>
 <div class=rightcol>
 
 - Similar options as `criterion_plot`
+- `selector` is a function returning a subset of params
 
-<img src="../../../bld/figures/params_plot.png" alt="janos" width="500"/>
+<img src="../../../bld/figures/params_plot.png" alt="janos" width="450"/>
 
 </div>
 
 ---
 
-### Algorithms from scipy, nlopt, TAO, pygmo, ...
+### Unified interface to (collections of) algorithms
 
-
+- **Nlopt**: Local and global algorithms by Stephen Johnson (MIT)
+- **Pygmo**: Global algorithms by Franceso Biscani and Dario Izzo (ESA)
+- **fides**: Pure Python algorithm by Fabian Fröhlich (Harvard)
+- **TAO**: Toolkit for advanced optimization (Argonne national lab)
+- **Cyipopt**: Python binding by Jason Moore to **IPOPT** algorithm by Andreas Wächter (Northwestern)
+- **estimagic**: Python implementations of some important algorithms
+- **Will add more soon (it is quite easy)**
 ---
 
 <!-- _class: split -->
@@ -550,9 +571,8 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 
 <div class=rightcol>
 
-- Numerical derivatives are calculated if closed-form is not available
-
-- Parallelize
+- Numerical derivatives are calculated if user does not provide a derivative
+- Efficient parallelization on (up to) as many cores as parameters
 
 </div>
 
@@ -573,7 +593,7 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 ...     algorithm="scipy_lbfgs",
 ... )
 >>> res.params
-array([ 0.,  0.,  0.,  0., -0.])
+array([ 0.,  0.,  0.,  0., 0.])
 ```
 
 
@@ -594,7 +614,8 @@ array([ 0.,  0.,  0.,  0., -0.])
 ...     soft_upper_bounds=np.full(5, 15),
 ...     multistart=True,
 ...     multistart_options={
-...         "convergence.max_discoveries": 5
+...         "convergence.max_discoveries": 5,
+...         "n_samples": 1000
 ...     },
 ... )
 >>> res.params
@@ -606,6 +627,9 @@ array([0., 0., 0., 0.,  0.])
 <div class=rightcol>
 
 - Turn local optimizers global
+- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak) by Fatih Guvenen and Serdar Ozkan
+- Exploration phase on random sample
+- Local optimizations from best points
 
 </div>
 
@@ -614,7 +638,13 @@ array([0., 0., 0., 0.,  0.])
 
 <!-- _class: split -->
 
-### Least-square optimizers
+<style scoped>
+section.split {
+    grid-template-columns: 470px 630px;
+}
+</style>
+
+### Exploit structure of your problem
 
 <div class=leftcol>
 
@@ -643,8 +673,10 @@ array([0., 0., 0., 0., 0.])
 
 - Exploit structure of the problem
 - Common structures
-    - least-square
-    - sum (log-likelihood)
+    - least-squares: $F(x) = \sum_if_i(x)^2$
+    - sum: $F(x) = \sum_if_i(x)$, e.g. log-likelihood
+- Huge speed-ups
+- Increased robustness
 
 </div>
 
@@ -652,6 +684,12 @@ array([0., 0., 0., 0., 0.])
 ---
 
 <!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 500px 600px;
+}
+</style>
+
 
 ### Logging and Dashboard
 
@@ -682,9 +720,11 @@ array([0., 0.817, 1.635, 2.452, 3.27 ])
 
 <div class=rightcol>
 
-- Store progress of your optimization
-- Read log file
-- Plot log data
+- Persistent log of parameters and criterion values
+- Thread safe sqlite database
+- No data loss, even if computer crashes
+- Can be read during optimization
+- Provides data for real-time dashboard
 
 </div>
 
@@ -693,7 +733,7 @@ array([0., 0.817, 1.635, 2.452, 3.27 ])
 
 <!-- _class: split -->
 
-### Harmonized `algo_options`
+### Harmonized as much as possible but not more
 
 <div class=leftcol>
 
@@ -702,7 +742,6 @@ array([0., 0.817, 1.635, 2.452, 3.27 ])
 ...     "convergence.relative_criterion_tolerance": 1e-9,
 ...     "stopping.max_iterations": 100_000,
 ...     "trustregion.initial_radius": 10.0,
-...     "clip_criterion_if_overflowing": True,
 ... }
 
 >>> res = minimize(
@@ -719,8 +758,9 @@ array([0., 0., 0., 0., 0.])
 
 <div class=rightcol>
 
-- Harmonized `algo_options`
-- Convergence criteria, tuning parameters, ...
+- Same options have same name
+- Different options have different names (e.g. not one `tol` argument)
+- Ignore options that don't apply
 
 </div>
 
@@ -728,11 +768,12 @@ array([0., 0., 0., 0., 0.])
 
 ### The estimagic Team
 
+
 <style scoped>
 .center {
   margin-left: auto;
   margin-right: auto;
-  font-size: 25px;
+  font-size: 24px;
 }
 
 </style>
@@ -741,39 +782,50 @@ array([0., 0., 0., 0., 0.])
 <table class="center">
     <tr>
         <th>
-            <img src="../graphs/janos.jpg" alt="janos" width="200"/>
+            <img src="../graphs/janos.jpg" alt="janos" width="190"/>
             <br>
             Janos
         </th>
         <th>
-            <img src="../graphs/tim.jpeg" alt="tim" width="200"/>
+            <img src="../graphs/tim.jpeg" alt="tim" width="190"/>
             <br>
             Tim
         </th>
         <th>
-            <img src="../graphs/klara.jpg" alt="klara" width="200"/>
+            <img src="../graphs/klara.jpg" alt="klara" width="190"/>
             <br>
             Klara
         </th>
     </tr>
     <tr>
         <th>
-            <img src="../graphs/sebi.jpg" alt="sebastian" width="200"/>
+            <img src="../graphs/sebi.jpg" alt="sebastian" width="190"/>
             <br>
             Sebastian
         </th>
         <th>
-            <img src="../graphs/tobi.png" alt="tobi" width="200"/>
+            <img src="../graphs/tobi.png" alt="tobi" width="190"/>
             <br>
             Tobias
         </th>
         <th>
-            <img src="../graphs/hmg.jpg" alt="hmg" width="200"/>
+            <img src="../graphs/hmg.jpg" alt="hmg" width="190"/>
             <br>
             Hans-Martin
         </th>
     </tr>
 </table>
+
+---
+
+### Thanks to
+
+- All [contributors](https://estimagic.readthedocs.io/en/stable/credits.html#contributors) to estimagic
+- [Kenneth Judd](https://kenjudd.org/) for feedback and funding of a research visit
+- [Gregor Reich](https://www.linkedin.com/in/gregor-reich-707a4358/?originalSubdomain=ch) for feedback
+- All authors of the amazing algorithms we are wrapping
+- The University of Bonn and [TRA-1 Modelling](https://www.uni-bonn.de/en/research-and-teaching/research-profile/transdisciplinary-research-areas/tra-1-modelling/about?set_language=en) for funding
+- [Collaborative Research Center Transregio 224](https://www.crctr224.de/en) for funding
 
 ---
 <!-- ===================================================================================
@@ -1021,6 +1073,130 @@ problems = em.get_benchmark_problems(
     - can be violated during optimization
 ---
 
+
+### How to specify bounds
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+#### Params as numpy array
+
+```python
+>>> def sphere(x):
+...     return x @ x
+
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(3) + 1,
+...     lower_bounds=np.ones(3),
+...     algorithm="scipy_lbfgsb",
+... )
+>>> res.params
+array([1., 1., 1.])
+```
+
+</div>
+<div class=rightcol>
+
+#### Params as DataFrame
+
+<style scoped>
+table {
+  font-size: 28px;
+}
+
+.center {
+  margin-left: 100px;
+  margin-right: auto;
+}
+
+</style>
+
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+      <th>lower_bound</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>a</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>c</th>
+      <td>3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>d</th>
+      <td>4</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+
+
+</div>
+
+---
+
+### How to specify bounds for pytrees
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 650px 450px;
+
+}
+</style>
+
+<div class=leftcol>
+
+
+```python
+params = {"x": np.arange(3), "intercept": 3}
+
+def criterion(p):
+    return p["x"] @ p["x"] + p["intercept"]
+
+res = em.minimize(
+    criterion,
+    params=params,
+    algorithm="scipy_lbfgsb",
+    lower_bounds={"intercept": -2},
+)
+
+```
+
+</div>
+<div class=rightcol>
+
+- Enough to specify the subset of params that actually has bounds
+- We try to match your bounds with params
+- Raise `InvalidBoundsError` in case of ambiguity
+
+</div>
+
+
+---
+
 ### Reparametrization example
 
 - Example:$min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
@@ -1040,7 +1216,7 @@ problems = em.get_benchmark_problems(
 - Find valid probabilities
 - Linear constraints (as long as there are not too many)
     - $min_x f(x) s.t. A_1 x = 0, A_2 x \leq 0$
-- #### Guaranteed to be fulfilled during optimization
+- **Guaranteed to be fulfilled during optimization**
 
 ---
 
@@ -1053,32 +1229,12 @@ problems = em.get_benchmark_problems(
     - forget to adjust derivative
     - confuse directions
     - use non-differentiable transformations
-- #### Estimagic does reparametrizations for you!
-- #### Completely hides transformed x
+- **Estimagic does reparametrizations for you!**
+- **Completely hides transformed x**
 
 ---
-
-### Example problem in two flavors
-
-- take the one from estimagic docs
-- dict version
-- df version
-
----
-
-
-### How to specify bounds
-
-- params df
-- numpy array
-- dict (subset selection!)
-
----
-
 
 ### Fixing parameters
-
-- two columns, dict and df version
 
 
 ---
@@ -1090,6 +1246,7 @@ problems = em.get_benchmark_problems(
 
 
 ### Nonlinear constraints
+
 
 
 ---
@@ -1167,7 +1324,7 @@ section.split {
 
 ### Multistart optimization (in estimagic)
 
-- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
+- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak) by Fatih Guvenen and Serdar Ozkan
 - Evaluate criterion on random exploration sample
 - Run local optimization from best point
 - In each iteration:
@@ -1217,7 +1374,7 @@ section.split {
 
 ### What is scaling
 
-- Single most underrated topic in applied optimization!
+- Single most underrated topic among economists who do optimization!
 - Well scaled: A fixed step in any parameter dimension yields roughly comparable changes in function value
     - $f(x_1, x_2) = 0.5 x_1 + 0.8 x_2$
 - Badly scaled: Some parameters are much more influential
@@ -1382,6 +1539,11 @@ section.split {
 
 ### Features we left out
 
+- [Error handling](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_handle_errors_during_optimization.html)
+- [Dashboard](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_the_dashboard.html)
+- [Log reading](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_logging.html)
+- [Nonlinear constraints](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html)
+- Advanced [parameter selection](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html#how-to-select-the-parameters) for constraints
 
 ---
 
@@ -1517,12 +1679,6 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 
 ### Vmap in JAX
 
-```python
->>> def add(x, y)
->>>     return x + y
->>> x, y = jnp.ones((2, 3)), jnp.ones((4, 5))
->>> add(x, y)
-```
 
 ---
 
@@ -1602,17 +1758,3 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ---
 
 ### Summary
-
-
----
-
-
-
-<!-- ===================================================================================
-# REFERENCES
-==================================================================================== -->
-
-### References
-
-- JAX Opt
-- scipy.optimize
