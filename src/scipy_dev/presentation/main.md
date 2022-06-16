@@ -906,32 +906,107 @@ section.split {
 
 ---
 
-### Scaling in estimagic
 
-
----
-
-### Benchmark `scipy_lbfgsb`
+### Effect of bad scaling: `scipy_lbfgsb`
 
 <img src="../graphs/scaling_scipy_lbfgsb.png" alt="scaling_lbfgsb" width="900"/>
 
 ---
 
-### Benchmark `fides`
+### Effect of bad scaling: `fides`
 
 <img src="../graphs/scaling_fides.png" alt="scaling_fides" width="900"/>
 
 ---
 
-### Benchmark `nag_dfols`
+### Effect of bad scaling: `nag_dfols`
 
 <img src="../graphs/scaling_nag_dfols.png" alt="scaling_dfols" width="900"/>
 
 ---
 
-### Benchmark `nlopt_bobyqa`
+### Effect of bad scaling: `nlopt_bobyqa`
 
 <img src="../graphs/scaling_nlopt_bobyqa.png" alt="scaling_nlopt_bobyqa" width="900"/>
+
+---
+
+### Scaling in estimagic: By start params
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+
+def badly_scaled(x):
+    return 0.01 * x[0] + x[1] + x[2] ** 6
+
+em.minimize(
+    criterion=badly_scaled,
+    params=np.array([200, 1, 1]),
+    scaling=True,
+    # pick default method explicitly
+    scaling_options={
+        "method": "start_values",
+    }
+)
+
+```
+
+</div>
+<div class=rightcol>
+
+- Optimizer sees x / x_start
+- Works without bounds
+- Will recover that x[0] needs large steps
+- Won't recover that x[2] needs tiny steps
+
+</div>
+
+---
+
+
+### Scaling in estimagic: By bounds
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+
+em.minimize(
+    criterion=badly_scaled,
+    params=np.array([200, 1, 1]),
+    scaling=True,
+    lower_bounds=np.array([-200, 0, 0.9]),
+    upper_bounds=np.array([500, 2, 1.1]),
+    scaling=True,
+    scaling_options={"method": "bounds"},
+)
+
+```
+
+</div>
+<div class=rightcol>
+
+- Internal parameter space mapped to $[0, 1]^n$
+- Will work great in this case
+- Requires careful specification of bounds
+
+</div>
 
 ---
 
