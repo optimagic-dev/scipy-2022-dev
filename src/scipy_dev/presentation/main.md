@@ -479,7 +479,7 @@ section.split {
 
 ### Relevant problem properties
 
-- Smoothness: Differentiable? With kinks? With discontinuities? Stochastic?
+- Smoothness: Differentiable? Kinks? Discontinuities? Stochastic?
 - Convexity: Are there local optima?
 - Size: 2 parameters? 10? 100? 1000? More?
 - Constraints: Bounds? Linear constraints? Nonlinear constraints?
@@ -490,18 +490,20 @@ section.split {
 
 ### `scipy_lbfgsb`
 
-- Limited memory BFGS with support for bounds
+- Limited memory BFGS
 - BFGS is a method to approximate hessians from multiple gradients
+- Supports bounds
 - Criterion must be differentiable
-- Very fast and scales to a few thousand parameters
+- Scales to a few thousand parameters
 - Beats other BFGS implementations in many benchmarks
-- Low overhead, i.e. works well for fast criterion functions
+- Low overhead
 
 ---
 
 ### `fides`
 
-- Derivative based trust-region algorithm with support for bounds
+- Derivative based trust-region algorithm
+- Supports bounds
 - Developed by Fabian Fröhlich as a Python package
 - Many advanced options to customize the optimization!
 - Criterion must be differentiable
@@ -511,7 +513,8 @@ section.split {
 
 ### `nlopt_bobyqa`, `nag_pybobyqa`
 
-- Derivative free trust region algorithm with support for bounds
+- **B**ound **O**ptimization **by** **Q**uadratic **A**pproximation
+- Derivative free trust region algorithm
 - `nlopt` version has less overhead
 - `nag` version has advanced options to deal with noise
 - `nag` version is very sensitive to bad scaling of parameters
@@ -522,10 +525,10 @@ section.split {
 
 ### `scipy_neldermead`, `nlopt_neldermead`
 
-- Very popular direct search method
+- Popular direct search method
 - `nlopt` version supports bounds
 - `nlopt` version requires much fewer criterion evaluations in most benchmarks
-- The Nelder-Mead algorithm is never the best choice but also rarely the worst
+- Never the best choice but rarely the worst
 - Immune to bad scaling of parameters
 
 ---
@@ -548,7 +551,7 @@ def sphere_ls(x):
 
 ### `nag_dfols`, `pounders`
 
-- Derivative free trust region methods for nonlinear least-squares problems
+- Derivative free trust region method for nonlinear least-squares problems
 - Both beat bobyqa for least-squares problems!
 - `nag_dfols` is fastest and usually requires fewest criterion evaluations
 - `nag_dfols` has advanced options to deal with noise
@@ -566,18 +569,18 @@ def sphere_ls(x):
 
 ---
 <!-- _class: lead -->
-# Practice Session 3: Play with `algorithm` and `algo_options` (15 min)
+# Practice Session 3: Play with `algorithm` and `algo_options` (20 min)
 
 ---
 
 ### What is benchmarking
 
 - Compare multiple algorithms on functions with known optimum
-- Benchmark functions should be similar to the problem you actually want to solve
+- Should mirror problems you actually want to solve
     - similar number of parameters
     - similar w.r.t. differentiability or noise
 - Benchmark functions should be fast!
-- There are standardized benchmark sets and visualizations
+- Standardized benchmark sets and ways to visualize results
 
 ---
 
@@ -691,23 +694,12 @@ problems = em.get_benchmark_problems(
 # Third hour
 ==================================================================================== -->
 
-
-### Constraints in estimagic
-
-- Harmonized way to specify bounds, linear and nonlinear constraints
-
-
-
 ### Terminology of constraints in estimagic
 
 - bounds: $min_{x} f(x)$ s.t. $l \leq x \leq u$
     - handled by most algorithms
-    - guaranteed to be fulfilled during optimization
 - estimagic constraints:
-    - handled via reparametrization and bounds
-    - multiple types, e.g. `"fixed"`, "increasing", "covariance", "probability"
-    - `"linear"` equality and inequality constraints
-    - guaranteed to be fulfilled during optimization
+    - handled by estimagic via reparametrization
 - nonlinear constraints: $min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
     - handled by some algorithms
     - can be violated during optimization
@@ -715,15 +707,38 @@ problems = em.get_benchmark_problems(
 
 ### Reparametrization example
 
-- Assume we want to minimize $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
-- Only defined if $x_1 \leq x_2$. Thus, this constraint should never be violated
-- This is not a simple bound but a linear constraint!
-- Let's solve this with reparametrization:
+- Example:$min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
+- Only defined if $x_1 \leq x_2$
+- Not a simple bound!
+- Reparametrization approach:
     - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
     - Calculate $argmin_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
-    - Translate the solution back into $x_1$ and $x_2$
-- Easy to get confused and make mistakes when implementing this by hand
-- Estimagic does this for you for many types of constraints
+    - Translate solution back into $x_1$ and $x_2$
+
+---
+
+### Which constraints can be handled this way?
+
+- Fixing parameters (simple but useful)
+- Find valid covariance and correlation matrices
+- Find valid probabilities
+- Linear constraints (as long as there are not too many)
+    - $min_x f(x) s.t. A_1 x = 0, A_2 x \leq 0$
+- #### Guaranteed to be fulfilled during optimization
+
+---
+
+
+### Do not try at home
+
+- Easy to make mistakes when implementing this
+    - forget to transform start parameters
+    - forget to translate back
+    - forget to adjust derivative
+    - confuse directions
+    - use non-differentiable transformations
+- #### Estimagic does reparametrizations for you!
+- #### Completely hides transformed x
 
 ---
 
@@ -735,6 +750,16 @@ problems = em.get_benchmark_problems(
 
 ---
 
+
+### How to specify bounds
+
+- params df
+- numpy array
+- dict (subset selection!)
+
+---
+
+
 ### Fixing parameters
 
 - two columns, dict and df version
@@ -743,14 +768,6 @@ problems = em.get_benchmark_problems(
 ---
 
 ### Linear constraints
-
-
----
-
-### What else can be done with reparametrization
-
-- list constraint types
-- link to docs
 
 
 ---
@@ -769,9 +786,37 @@ problems = em.get_benchmark_problems(
 ---
 
 
-### What is global optimization
+### Global vs local optimization
 
-- needs bounds to be well defined!
+- Local: Find any local optimum
+    - All we have done so far
+- Global: Find best local optimum
+    - Needs bounds to be well defined
+    - Extremely challenging in high dimensions
+- Global and local optimization are the same for convex problems
+
+---
+
+### Examples
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+bla
+
+</div>
+<div class=rightcol>
+
+blubb
+
+</div>
 
 ---
 
