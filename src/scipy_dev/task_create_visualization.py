@@ -14,6 +14,7 @@ from scipy_dev.visualizations import plot_function_3d
 @pytask.mark.produces(BLD.joinpath("figures", "criterion_plot.png"))
 def task_create_criterion_plot(produces):
     fig = create_criterion_plot()
+    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
     fig.write_image(produces)
 
 
@@ -21,6 +22,7 @@ def task_create_criterion_plot(produces):
 @pytask.mark.produces(BLD.joinpath("figures", "params_plot.png"))
 def task_create_params_plot(produces):
     fig = create_params_plot()
+    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
     fig.write_image(produces)
 
 

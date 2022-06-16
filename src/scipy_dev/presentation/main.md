@@ -427,6 +427,7 @@ steps. The first column only considers the last step. The second column consider
 
 ### Criterion plot
 
+
 <div class=leftcol>
 
 ```python
@@ -434,11 +435,16 @@ from estimagic import criterion_plot
 
 criterion_plot(res, max_evaluations=300)
 ```
+<img src="../../../bld/figures/criterion_plot.png" alt="criterion" width="500"
+style="display: block;"/>
+</p>
 
 </div>
 <div class=rightcol>
 
-![](../../../bld/figures/criterion_plot.png)
+- `res` can be a list
+- many options
+    - stack multistart
 
 </div>
 
@@ -452,6 +458,12 @@ criterion_plot(res, max_evaluations=300)
 ```python
 from estimagic import params_plot
 
+params = {
+    "a": 0,
+    "b": 1,
+    "c": pd.Series([2, 3, 4])
+}
+
 params_plot(
     res,
     max_evaluations=300,
@@ -463,7 +475,9 @@ params_plot(
 </div>
 <div class=rightcol>
 
-![](../../../bld/figures/params_plot.png)
+- Similar options as `criterion_plot`
+
+<img src="../../../bld/figures/params_plot.png" alt="janos" width="500"/>
 
 </div>
 
@@ -538,6 +552,8 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 
 - Numerical derivatives are calculated if closed-form is not available
 
+- Parallelize
+
 </div>
 
 
@@ -572,17 +588,17 @@ array([ 0.,  0.,  0.,  0., -0.])
 ```python
 >>> res = minimize(
 ...     criterion=sphere,
-...     params=np.arange(10),
+...     params=np.arange(5),
 ...     algorithm="scipy_neldermead",
-...     soft_lower_bounds=np.full(10, -5),
-...     soft_upper_bounds=np.full(10, 15),
+...     soft_lower_bounds=np.full(5, -5),
+...     soft_upper_bounds=np.full(5, 15),
 ...     multistart=True,
 ...     multistart_options={
 ...         "convergence.max_discoveries": 5
 ...     },
 ... )
 >>> res.params
-array([0.,  0., 0., 0.,  0., 0.,  0., 0., 0., 0.])
+array([0., 0., 0., 0.,  0.])
 ```
 
 
@@ -647,7 +663,9 @@ array([0., 0., 0., 0., 0.])
 ...    params=np.arange(5),
 ...    algorithm="scipy_lbfgsb",
 ...    logging="my_log.db",
-...    log_options={"if_database_exists": "replace"},
+...    log_options={
+...       "if_database_exists": "replace"
+...    },
 ... )
 
 >>> from estimagic import OptimizeLogReader
@@ -655,6 +673,9 @@ array([0., 0., 0., 0., 0.])
 >>> reader = OptimizeLogReader("my_log.db")
 >>> reader.read_history().keys()
 dict_keys(['params', 'criterion', 'runtime'])
+
+>>> reader.read_iteration(1)["params"]
+array([0., 0.817, 1.635, 2.452, 3.27 ])
 ```
 
 </div>
@@ -680,12 +701,14 @@ dict_keys(['params', 'criterion', 'runtime'])
 >>> algo_options = {
 ...     "convergence.relative_criterion_tolerance": 1e-9,
 ...     "stopping.max_iterations": 100_000,
+...     "trustregion.initial_radius": 10.0,
+...     "clip_criterion_if_overflowing": True,
 ... }
 
 >>> res = minimize(
 ...     criterion=sphere,
 ...     params=np.arange(5),
-...     algorithm="scipy_lbfgsb",
+...     algorithm="nag_pybobyqa",
 ...     algo_options=algo_options,
 ... )
 >>> res.params
@@ -711,6 +734,7 @@ array([0., 0., 0., 0., 0.])
   margin-right: auto;
   font-size: 25px;
 }
+
 </style>
 
 
@@ -727,16 +751,16 @@ array([0., 0., 0., 0., 0.])
             Tim
         </th>
         <th>
-            <img src="../graphs/sebi.jpg" alt="sebastian" width="200"/>
+            <img src="../graphs/klara.jpg" alt="klara" width="200"/>
             <br>
-            Sebastian
+            Klara
         </th>
     </tr>
     <tr>
         <th>
-            <img src="../graphs/klara.jpg" alt="klara" width="200"/>
+            <img src="../graphs/sebi.jpg" alt="sebastian" width="200"/>
             <br>
-            Klara
+            Sebastian
         </th>
         <th>
             <img src="../graphs/tobi.png" alt="tobi" width="200"/>
@@ -746,7 +770,7 @@ array([0., 0., 0., 0., 0.])
         <th>
             <img src="../graphs/hmg.jpg" alt="hmg" width="200"/>
             <br>
-            HMG
+            Hans-Martin
         </th>
     </tr>
 </table>

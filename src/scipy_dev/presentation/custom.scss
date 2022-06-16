@@ -7,6 +7,7 @@ section {
     font-size: 35px;
 }
 
+
 h3 {
     font-size: 50px;
 }
@@ -40,7 +41,7 @@ section.split {
     overflow: visible;
     display: grid;
     grid-template-columns: 550px 550px;
-    grid-template-rows: 100px auto;
+    grid-template-rows: 60px auto;
     grid-template-areas:
         "slideheading slideheading"
         "leftpanel rightpanel";
