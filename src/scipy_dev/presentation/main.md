@@ -401,7 +401,6 @@ section.split {
 ### OptimizeResult
 
 
-
 ---
 
 ### Criterion plot
@@ -515,7 +514,6 @@ section.split {
 - Derivative free trust region algorithm
 - `nlopt` version has less overhead
 - `nag` version has advanced options to deal with noise
-- `nag` version is very sensitive to bad scaling of parameters
 - Good choice for non-differentiable but not too noisy functions
 - Slower than derivative based methods but faster than neldermead
 
@@ -526,8 +524,8 @@ section.split {
 - Popular direct search method
 - `nlopt` version supports bounds
 - `nlopt` version requires much fewer criterion evaluations in most benchmarks
-- Never the best choice but rarely the worst
-- Immune to bad scaling of parameters
+- Never the best choice but often not the worst
+- Can be very precise if run long enough
 
 ---
 
@@ -554,7 +552,6 @@ def sphere_ls(x):
 - `nag_dfols` is fastest and usually requires fewest criterion evaluations
 - `nag_dfols` has advanced options to deal with noise
 - `pounders` can do criterion evaluations in parallel
-- Sensitive to bad scaling of parameters
 
 ---
 
@@ -783,6 +780,11 @@ problems = em.get_benchmark_problems(
 
 ---
 
+<!-- _class: lead -->
+# Global optimization
+
+---
+
 
 ### Global vs local optimization
 
@@ -807,12 +809,13 @@ section.split {
 
 <div class=leftcol>
 
-bla
+<img src="../../../bld/figures/alpine.png" alt="alpine" width="500" class="center"/>
+
 
 </div>
 <div class=rightcol>
 
-blubb
+<img src="../../../bld/figures/ackley.png" alt="ackley" width="500" class="center"/>
 
 </div>
 
@@ -820,60 +823,158 @@ blubb
 
 ### Genetic algorithms
 
+- Heuristic inspired by natural selection
+- Random initial population of parameters
+- In each evolution step:
+    - Evaluate "fitness" of all population members
+    - Replace worst by combinations of good ones
+- Converge when max iterations are reached
+- Examples: `"pygmo_gaco"`, `"pygmo_bee_colony"`, `"nlopt_crs2_lm"`, ...
+
 ---
 
 ### Bayesian optimization
 
+- Evaluate criterion on grid or sample of parameters
+- Build surrogate model of criterion
+- In each iteration
+    - Do new criterion evaluations at promising points
+    - Improve surrogate model
+- Converge when max iterations is reached
+
 ---
 
-### Multistart optimization
+### Multistart optimization (in estimagic)
+
+- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
+- Evaluate criterion on random exploration sample
+- Run local optimization from best point
+- In each iteration:
+    - Combine best parameter and next best exploration point
+    - Run local optimization from there
+- Converge if current best optimum was rediscovered several times
+- Use any estimagic algorithm for local optimization
+- Can distinguish soft and hard bounds
 
 ---
 
 ### How to choose
 
-
-
----
-
-
-### Example 1: Non-smooth, 5 Parameters
-
-
-
----
-
-### Example 2: Smooth, 15 Parameters
-
-- alpine on left, criterion plot on right
+- Extremely expensive criterion (i.e. can only do a few evaluations):
+    -> Bayesian optimization
+- Differentiable function or least-squares structure and not too many local optima:
+    -> Multistart with a local optimizer tailored to function properties
+- Rugged function with extremely many local optima
+    -> Genetic optimizer
+    -> Consider refining the result with local optimizer
+- All are equally parallelizable
 
 ---
 
-### Global optimization survival guide
+### Advanced multistart
 
-- Do n
+- Many local optima:
+    - Large `"n_sample"`
+    - Low `"share_optimizations"`
+    - Weak convergence criteria
+    - Refine result with stricter convergence criteria
+- Few local optima:
+    - Stick with defaults
 
+---
+
+### Benchmark results
 
 
 ---
 
 <!-- _class: lead -->
-
-### Numerical instability during optimization
-
-
----
-
-### Error handling in estimagic
-
----
-
-### Scaling of optimization problems
+# Scaling
 
 
 ---
+
+### What is scaling
+
+- Single most underrated topic in applied optimization!
+- Well scaled: A fixed step in any parameter dimension yields roughly comparable changes in function value
+    - $f(x_1, x_2) = 0.5 x_1 + 0.8 x_2$
+- Badly scaled: Some parameters are much more influential
+    - $f(x_1, x_2) = 1000 x_1 + 0.2 x_2$
+    - $f(x_1, x_2) = e^{x_1} + \sqrt{x_2}$
+- Often arises when parameters have very different units
+
+---
+
 ### Scaling in estimagic
 
+
+---
+
+### Benchmark `scipy_lbfgsb`
+
+<img src="../graphs/scaling_scipy_lbfgsb.png" alt="scaling_lbfgsb" width="900"/>
+
+---
+
+### Benchmark `fides`
+
+<img src="../graphs/scaling_fides.png" alt="scaling_fides" width="900"/>
+
+---
+
+### Benchmark `nag_dfols`
+
+<img src="../graphs/scaling_nag_dfols.png" alt="scaling_dfols" width="900"/>
+
+---
+
+### Benchmark `nlopt_bobyqa`
+
+<img src="../graphs/scaling_nlopt_bobyqa.png" alt="scaling_nlopt_bobyqa" width="900"/>
+
+---
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+    grid-template-areas:
+        "leftpanel rightpanel";
+}
+</style>
+
+
+<div class=leftcol>
+
+#### Very scale sensitive
+
+- `nag_pybobyqa`
+- `tao_pounders`
+- `pounders`
+- `nag_dfols`
+- `scipy_cobyla`
+
+#### Somewhat scale sensitive
+
+- `scipy_lbfgsb`
+- `fides`
+
+</div>
+<div class=rightcol>
+
+
+
+#### Not scale sensitive
+
+- `scipy_neldermead`
+- `nlopt_neldermead`
+- `nlopt_bobyqa`
+- `scipy_powell`
+- `scipy_ls_lm`
+- `scipy_ls_trf`
+
+</div>
 
 
 ---
@@ -883,11 +984,40 @@ blubb
 
 ---
 
+### Features we left out
+
+
+---
+
+### Documentation of estimagic
+
+- [estimagic.readthedocs.io](https://estimagic.readthedocs.io/en/stable/)
+- **Getting started**: Short tutorials
+- **How to guides**: Explanations and examples for each argument of `maximize` and `minimize`
+- **API Reference**: Interface of all public functions
+- **Explanations**: Background information, tips and tricks, best practices
+
+---
+
+### How to contribute
+
+- Make issues or provide feedback
+- Improve or extend the documentation
+- Suggest, wrap or implement new optimizers
+- Teach estimagic to colleagues, students and friends
+- Make us happy by giving us a :star: on [github.com/OpenSourceEconomics/estimagic](https://github.com/OpenSourceEconomics/estimagic)
+
+
+
 <!-- ===================================================================================
 # Last hour
 ==================================================================================== -->
 
-### Other features and documentation of estimagic
+
+
+
+
+
 
 ---
 
