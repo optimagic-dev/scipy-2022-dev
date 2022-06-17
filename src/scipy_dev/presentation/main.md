@@ -86,7 +86,7 @@ section.split {
 
 - Parameters $x_1$, $x_2$
 - Criterion $f(x_1, x_2) = x_1^2 + x_2^2$
-- Want: $x_1^*, x_2^* = \text{argmin}_{x_1, x_2} f(x_1, x_2)$
+- Want: $x_1^*, x_2^* = \text{argmin} f(x_1, x_2)$
 - Possible extensions:
     - Constraints
     - Bounds
@@ -1276,12 +1276,13 @@ res = em.minimize(
 
 ### Reparametrization example
 
-- Example:$\min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
-- Only defined if $x_1 \leq x_2$
+- Example: $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
+- Only defined for $x_1 \leq x_2$
+- Solve: $\min f(x_1, x_2) \text{ s.t. } x_1 \leq x_2$
 - Not a simple bound!
 - Reparametrization approach:
     - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
-    - Calculate $\text{argmin}_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
+    - Solve: $\min \tilde{f}(x_1, \tilde{x}_2) \text{ s.t. } \tilde{x}_2 \geq 0$
     - Translate solution back into $x_1$ and $x_2$
 
 ---
@@ -1292,7 +1293,7 @@ res = em.minimize(
 - Find valid covariance and correlation matrices
 - Find valid probabilities
 - Linear constraints (as long as there are not too many)
-    - $\min_x f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
+    - $\min f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
 - **Guaranteed to be fulfilled during optimization**
 
 ---
