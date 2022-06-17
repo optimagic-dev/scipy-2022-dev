@@ -386,7 +386,7 @@ section.split {
 </div>
 <div class=rightcol>
 
-- `params` can be a general pytree
+- `params` can be a [pytree](https://jax.readthedocs.io/en/latest/pytrees.html)
 - includes (nested) dicts, lists, tuples or namedtuples containing numbers, arrays, Series and DataFrames
 - Special case: DataFrame with columns `"value"`, `"lower_bound"` and `"upper_bound"`
 </div>
@@ -955,6 +955,7 @@ array([0., 0., 0., 0., 0.])
 - Constraints: Bounds? Linear constraints? Nonlinear constraints?
 - Special structure: Nonlinear least-squares, Log-likelihood function
 - Goal: Do you need a global solution? How precise?
+- -> Properties guide the selection but do not replace benchmarking
 
 ---
 
@@ -1167,8 +1168,12 @@ problems = em.get_benchmark_problems(
 
 ---
 
+
 ### Terminology of constraints in estimagic
 
+
+- Constraints are conditions on parameters
+- Can make problems simpler or more difficult
 - bounds: $\min_{x} f(x)$ s.t. $l \leq x \leq u$
     - handled by most algorithms
 - estimagic constraints:
@@ -1314,17 +1319,133 @@ res = em.minimize(
 
 ### Fixing parameters
 
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 650px 450px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+>>> def criterion(params):
+...     offset = np.linspace(1, 0, len(params))
+...     x = params - offset
+...     return x @ x
+
+unconstrained_optimum = [1, 0.8, 0.6, 0.4, 0.2, 0]
+
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.array([2.5, 1, 1, 1, 1, -2.5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints={"loc": [0, 5], "type": "fixed"},
+... )
+>>> res.params
+array([ 2.5,  0.8,  0.6,  0.4,  0.2, -2.5])
+```
+
+</div>
+<div class=rightcol>
+
+- `loc` selects location 0 and 5 of the parameters
+- `type` states that they are fixed
+- Other selection methods will be explained later
+
+</div>
+
 
 ---
 
 ### Linear constraints
 
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.ones(6),
+...     algorithm="scipy_lbfgsb",
+...     constraints={
+...         "loc": [0, 1, 2, 3],
+...         "type": "linear",
+...         "lower_bound": 0.95,
+...         "weights": 0.25,
+...     },
+... )
+>>> res.params
+array([ 1.25, 1.05, 0.85, 0.65, 0.2 , -0.])
+```
+
+</div>
+<div class=rightcol>
+
+- Imposes that average of first 4 parameters is larger than 0.95
+- Weights can be scalars or same length as selected parameters
+- Use "value" instead of "lower_bound" for linear equality constraint
+
+</div>
 
 ---
 
 
 ### Nonlinear constraints
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 500px 600px;
+}
+</style>
 
+
+<div class=leftcol>
+
+```python
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.ones(6),
+...     algorithm="scipy_slsqp",
+...     constraints={
+...         "type": "nonlinear",
+...         "loc": [0, 1, 2, 3, 4],
+...         "func": lambda x: np.prod(x),
+...         "value": 1.0,
+...     },
+... )
+>>> res.params
+array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
+```
+
+</div>
+<div class=rightcol>
+
+- Restrict the product of first five parameters to 1
+- Only works with some optimizers
+- `func` can be an arbitrary python function of params that returns a number, array or pytree
+- Use "lower_bound" and "upper_bound" instead of "value" for inequality constraints
+
+</div>
+
+---
+
+### Parameter selection methods
+
+- The `"loc"` field can be replaced other things for some params formats
+- If params is a DataFrame with "value" column
+    - `"query"`: An arbitrary query string that selects the relevant rows
+    - `"loc"`: Will be passed to `DataFrame.loc`
+- With all params formats
+    - `"selector"`: A python function that takes params as arguments and returns a subset of params
 
 
 ---
@@ -1439,10 +1560,6 @@ section.split {
 
 ---
 
-### Benchmark results
-
-
----
 
 <!-- _class: lead -->
 # Scaling
@@ -1615,16 +1732,6 @@ section.split {
 
 ---
 
-### Features we left out
-
-- [Error handling](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_handle_errors_during_optimization.html)
-- [Dashboard](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_the_dashboard.html)
-- [Log reading](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_use_logging.html)
-- [Nonlinear constraints](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html)
-- Advanced [parameter selection](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html#how-to-select-the-parameters) for constraints
-
----
-
 ### Documentation of estimagic
 
 - [estimagic.readthedocs.io](https://estimagic.readthedocs.io/en/stable/)
@@ -1657,16 +1764,47 @@ section.split {
 
 ---
 
-### Numerical dervatives vs. automatic differentiation
+#### Numerical vs automatic differentiation (oversimplified)
+
+- **Automatic differentiation**
+    - Magic way to calculate precise derivatives of Python functions
+    - Gradient calculation takes about 3 times longer than function
+    - Runtime independent of parameters
+    - Code must be written in a certain way
+- **Numerical differentiation**
+    - Finite step approximation to derivatives
+    - Less precise than automatic differentiation
+    - Runtime increases linearly with number of parameters
 
 
 ---
 ### What is JAX
 
+- GPU accelerated replacement for Numpy
+- State of the art automatic differentiation
+    - Gradients
+    - Jacobians
+    - Hessians
+- Just in time compiler for python code
+- Composable function transformations such as `vmap`
+- It's a life changing library!
 
 ---
 
 ### Calculating derivatives with JAX
+
+```python
+>>> import jax.numpy as jnp
+>>> import jax
+
+>>> def sphere(x):
+...     return jnp.sum(x ** 2)
+
+>>> gradient = jax.grad(sphere)
+
+>>> gradient(jnp.array([1., 1.5, 2.]))
+DeviceArray([2., 3., 4.], dtype=float32)
+```
 
 
 ---
@@ -1832,7 +1970,3 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 
 <!-- _class: lead -->
 # Practice Session 8: Vectorized optimization in JAXopt (15 min)
-
----
-
-### Summary
