@@ -10,20 +10,44 @@ from scipy_dev.visualizations import create_params_plot
 from scipy_dev.visualizations import plot_function_3d
 
 
-@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
-@pytask.mark.produces(BLD.joinpath("figures", "criterion_plot.png"))
-def task_create_criterion_plot(produces):
-    fig = create_criterion_plot()
-    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
-    fig.write_image(produces)
+for plot_kwargs in [{}, {"monotone": True}, {"max_evaluations": 300}]:
+
+    if plot_kwargs:
+        _id = "_" + list(plot_kwargs.keys())[0]
+    else:
+        _id = ""
+
+    kwargs = {
+        "plot_kwargs": plot_kwargs,
+        "depends_on": SRC.joinpath("visualizations.py"),
+        "produces": BLD.joinpath("figures", f"criterion_plot{_id}.png"),
+    }
+
+    @pytask.mark.task(id=_id, kwargs=kwargs)
+    def task_create_criterion_plot(produces, plot_kwargs):
+        fig = create_criterion_plot(plot_kwargs)
+        fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+        fig.write_image(produces)
 
 
-@pytask.mark.depends_on(SRC.joinpath("visualizations.py"))
-@pytask.mark.produces(BLD.joinpath("figures", "params_plot.png"))
-def task_create_params_plot(produces):
-    fig = create_params_plot()
-    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
-    fig.write_image(produces)
+for plot_kwargs in [{}, {"selector": lambda params: params["c"]}]:
+
+    if plot_kwargs:
+        _id = "_" + list(plot_kwargs.keys())[0]
+    else:
+        _id = ""
+
+    kwargs = {
+        "plot_kwargs": plot_kwargs,
+        "depends_on": SRC.joinpath("visualizations.py"),
+        "produces": BLD.joinpath("figures", f"params_plot{_id}.png"),
+    }
+
+    @pytask.mark.task(id=_id, kwargs=kwargs)
+    def task_create_params_plot(produces, plot_kwargs):
+        fig = create_params_plot(plot_kwargs)
+        fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+        fig.write_image(produces)
 
 
 @pytask.mark.depends_on(SRC.joinpath("visualizations.py"))

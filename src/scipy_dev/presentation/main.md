@@ -63,7 +63,7 @@ University of Bonn
 2. Introduction to `scipy.optimize`
 3. Introduction to `estimagic`
 4. Choosing algorithms
-5. Advanced estimagic
+5. Advanced `estimagic`
 6. Jax and Jaxopt
 
 ---
@@ -86,7 +86,7 @@ section.split {
 
 - Parameters $x_1$, $x_2$
 - Criterion $f(x_1, x_2) = x_1^2 + x_2^2$
-- Want: $x_1^*, x_2^* = argmin_{x_1, x_2} f(x_1, x_2)$
+- Want: $x_1^*, x_2^* = \text{argmin}_{x_1, x_2} f(x_1, x_2)$
 - Possible extensions:
     - Constraints
     - Bounds
@@ -364,9 +364,10 @@ section.split {
 
 ```python
 >>> def dict_sphere(x):
-...     out = x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
+...     out = (
+...         x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
+...     )
 ...     return out
-
 
 >>> res = em.minimize(
 ...     criterion=dict_sphere,
@@ -381,12 +382,12 @@ section.split {
       1    0.
       2    0.
  dtype: float64}
-
 ```
 </div>
 <div class=rightcol>
 
-- `params` can be (nested) dicts, lists, tuples or namedtuples containing numbers, arrays, Series and DataFrames.
+- `params` can be a general pytree
+- includes (nested) dicts, lists, tuples or namedtuples containing numbers, arrays, Series and DataFrames
 - Special case: DataFrame with columns `"value"`, `"lower_bound"` and `"upper_bound"`
 </div>
 
@@ -437,13 +438,61 @@ dict_keys(['params', 'criterion', 'runtime'])
 ---
 
 <!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 500px 600px;
+}
+</style>
+
+
+### Logging and Dashboard
+
+<div class=leftcol>
+
+```python
+>>> res = em.minimize(
+...    criterion=sphere,
+...    params=np.arange(5),
+...    algorithm="scipy_lbfgsb",
+...    logging="my_log.db",
+...    log_options={
+...       "if_database_exists": "replace"
+...    },
+... )
+
+>>> from estimagic import OptimizeLogReader
+
+>>> reader = OptimizeLogReader("my_log.db")
+>>> reader.read_history().keys()
+dict_keys(['params', 'criterion', 'runtime'])
+
+>>> reader.read_iteration(1)["params"]
+array([0., 0.817, 1.635, 2.452, 3.27 ])
+```
+
+</div>
+
+<div class=rightcol>
+
+- Persistent log of parameters and criterion values
+- Thread safe sqlite database
+- No data loss, even if computer crashes
+- Can be read during optimization
+- Provides data for real-time dashboard
+
+</div>
+
+
+---
+
+<!-- _class: split -->
 
 ### Criterion plot
 
 <div class=leftcol>
 
 ```python
-em.criterion_plot(res, max_evaluations=300)
+em.criterion_plot(res)
 ```
 <img src="../../../bld/figures/criterion_plot.png" alt="criterion" width="500"
 style="display: block;"/>
@@ -452,10 +501,54 @@ style="display: block;"/>
 </div>
 <div class=rightcol>
 
-- First argument can be a `OptimizeResult`, path to log file or dictionary
-containing these as values
+- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
+
+</div>
+
+---
+
+<!-- _class: split -->
+
+### Criterion plot (2)
+
+<div class=leftcol>
+
+```python
+em.criterion_plot(res, monotone=True)
+```
+<img src="../../../bld/figures/criterion_plot_monotone.png" alt="criterion" width="500"
+style="display: block;"/>
+</p>
+
+</div>
+<div class=rightcol>
+
+- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
 - `monotone=True` shows the current best value
-- `max_evaluations` sets range of x-axis
+
+</div>
+
+---
+
+<!-- _class: split -->
+
+### Criterion plot (3)
+
+<div class=leftcol>
+
+```python
+em.criterion_plot(res, max_evaluations=300)
+```
+<img src="../../../bld/figures/criterion_plot_max_evaluations.png" alt="criterion" width="500"
+style="display: block;"/>
+</p>
+
+</div>
+<div class=rightcol>
+
+- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
+- `monotone=True` shows the current best value
+- `max_evaluations` sets upper limit of x-axis
 
 </div>
 
@@ -482,6 +575,41 @@ params = {
 em.params_plot(
     res,
     max_evaluations=300,
+)
+```
+
+</div>
+<div class=rightcol>
+
+<img src="../../../bld/figures/params_plot.png" alt="params_plot" width="500"/>
+
+- Similar options as `criterion_plot`
+
+</div>
+
+---
+<!-- _class: split -->
+
+### Params plot (2)
+
+<style scoped>
+section.split {
+    grid-template-columns: 450px 650px;
+}
+</style>
+
+<div class=leftcol>
+
+
+```python
+params = {
+    "a": 0,
+    "b": 1,
+    "c": pd.Series([2, 3, 4])
+}
+em.params_plot(
+    res,
+    max_evaluations=300,
     selector=lambda x: x["c"],
 )
 ```
@@ -489,10 +617,10 @@ em.params_plot(
 </div>
 <div class=rightcol>
 
+<img src="../../../bld/figures/params_plot_selector.png" alt="params_plot_selector" width="500"/>
+
 - Similar options as `criterion_plot`
 - `selector` is a function returning a subset of params
-
-<img src="../../../bld/figures/params_plot.png" alt="janos" width="450"/>
 
 </div>
 
@@ -505,8 +633,9 @@ em.params_plot(
 - **fides**: Pure Python algorithm by Fabian Fröhlich (Harvard)
 - **TAO**: Toolkit for advanced optimization (Argonne national lab)
 - **Cyipopt**: Python binding by Jason Moore to **IPOPT** algorithm by Andreas Wächter (Northwestern)
+- **NAG**: Numerical algorithms group (Oxford)
 - **estimagic**: Python implementations of some important algorithms
-- **Will add more soon (it is quite easy)**
+- **List not exhaustive and will add more soon (it is quite easy)**
 ---
 
 <!-- _class: split -->
@@ -515,7 +644,7 @@ em.params_plot(
 <div class=leftcol>
 
 ```python
->>> res = minimize(
+>>> res = em.minimize(
 ...     criterion=sphere,
 ...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
 ...     algorithm="scipy_lbfgsb",
@@ -523,7 +652,7 @@ em.params_plot(
 ...         "loc": [0, 1, 2],
 ...         "type": "probability"
 ...     }],
->>> )
+... )
 
 >>> res.params
 array([0.33334, 0.33333, 0.33333, -0., 0.])
@@ -543,6 +672,27 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 
 ---
 
+### Constraints have to hold
+
+```python
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.array([1, 2, 3, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints=[{
+...         "loc": [0, 1, 2],
+...         "type": "probability"
+...     }],
+... )
+InvalidParamsError: A constraint of type 'probability' is not fulfilled in params,
+please make sure that it holds for the starting values. The problem arose because:
+Probabilities do not sum to 1. The names of the involved parameters are: ['0', '1', '2']
+The relevant constraint is:
+{'loc': [0, 1, 2], 'type': 'probability', 'index': array([0, 1, 2])}.
+```
+
+---
+
 <!-- _class: split -->
 
 ### Closed-form or parallel numerical derivatives
@@ -552,14 +702,14 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 >>> def sphere_gradient(params):
 ...     return 2 * params
 
->>> minimize(
+>>> em.minimize(
 ...     criterion=sphere,
 ...     params=np.arange(5),
 ...     algorithm="scipy_lbfgsb",
 ...     derivative=sphere_gradient,
 ... )
 
->>> minimize(
+>>> em.minimize(
 ...     criterion=sphere,
 ...     params=np.arange(5),
 ...     algorithm="scipy_lbfgsb",
@@ -582,12 +732,10 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 ### There is maximize
 
 ```python
->>> from estimagic import maximize
-
 >>> def upside_down_sphere(params):
 ...     return -params @ params
 
->>> res = maximize(
+>>> res = em.maximize(
 ...     criterion=upside_down_sphere,
 ...     params=np.arange(5),
 ...     algorithm="scipy_lbfgs",
@@ -601,12 +749,12 @@ array([ 0.,  0.,  0.,  0., 0.])
 
 <!-- _class: split -->
 
-### Built in multistart framework
+### Built-in multistart framework
 <div class=leftcol>
 
 
 ```python
->>> res = minimize(
+>>> res = em.minimize(
 ...     criterion=sphere,
 ...     params=np.arange(5),
 ...     algorithm="scipy_neldermead",
@@ -644,7 +792,7 @@ section.split {
 }
 </style>
 
-### Exploit structure of your problem
+### Exploiting special structure of $F$
 
 <div class=leftcol>
 
@@ -658,7 +806,7 @@ section.split {
 ...     }
 ...     return out
 
->>> res = minimize(
+>>> res = em.minimize(
 ...     criterion=general_sphere,
 ...     params=np.arange(5),
 ...     algorithm="pounders",
@@ -684,54 +832,6 @@ array([0., 0., 0., 0., 0.])
 ---
 
 <!-- _class: split -->
-<style scoped>
-section.split {
-    grid-template-columns: 500px 600px;
-}
-</style>
-
-
-### Logging and Dashboard
-
-<div class=leftcol>
-
-```python
->>> res = minimize(
-...    criterion=sphere,
-...    params=np.arange(5),
-...    algorithm="scipy_lbfgsb",
-...    logging="my_log.db",
-...    log_options={
-...       "if_database_exists": "replace"
-...    },
-... )
-
->>> from estimagic import OptimizeLogReader
-
->>> reader = OptimizeLogReader("my_log.db")
->>> reader.read_history().keys()
-dict_keys(['params', 'criterion', 'runtime'])
-
->>> reader.read_iteration(1)["params"]
-array([0., 0.817, 1.635, 2.452, 3.27 ])
-```
-
-</div>
-
-<div class=rightcol>
-
-- Persistent log of parameters and criterion values
-- Thread safe sqlite database
-- No data loss, even if computer crashes
-- Can be read during optimization
-- Provides data for real-time dashboard
-
-</div>
-
-
----
-
-<!-- _class: split -->
 
 ### Harmonized as much as possible but not more
 
@@ -744,7 +844,7 @@ array([0., 0.817, 1.635, 2.452, 3.27 ])
 ...     "trustregion.initial_radius": 10.0,
 ... }
 
->>> res = minimize(
+>>> res = em.minimize(
 ...     criterion=sphere,
 ...     params=np.arange(5),
 ...     algorithm="nag_pybobyqa",
@@ -948,7 +1048,7 @@ def sphere_ls(x):
     - similar number of parameters
     - similar w.r.t. differentiability or noise
 - Benchmark functions should be fast!
-- Standardized benchmark sets and ways to visualize results
+- Standardized sets of test problems and ways to visualize results
 
 ---
 
@@ -983,7 +1083,7 @@ results = em.run_benchmark(
 </div>
 <div class=rightcol>
 
-- Multiple benchmark sets
+- Multiple sets of test problems
     - more_wild
     - estimagic
     - example
@@ -1040,7 +1140,7 @@ problems = em.get_benchmark_problems(
 
 - Add additive noise
 - Add bad scaling
-- This would be a very difficult problem set
+- This would be a very difficult set of problems
 
 </div>
 
@@ -1062,31 +1162,35 @@ problems = em.get_benchmark_problems(
 # Third hour
 ==================================================================================== -->
 
+<!-- _class: lead -->
+# Advanced `estimagic`
+
+---
+
 ### Terminology of constraints in estimagic
 
-- bounds: $min_{x} f(x)$ s.t. $l \leq x \leq u$
+- bounds: $\min_{x} f(x)$ s.t. $l \leq x \leq u$
     - handled by most algorithms
 - estimagic constraints:
     - handled by estimagic via reparametrization
-- nonlinear constraints: $min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
+- nonlinear constraints: $\min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
     - handled by some algorithms
     - can be violated during optimization
 ---
 
 
-### How to specify bounds
+### How to specify bounds for array params
 
 <!-- _class: split -->
 <style scoped>
 section.split {
-    grid-template-columns: 550px 550px;
+    grid-template-columns: 650px 450px;
+
 }
 </style>
 
-
 <div class=leftcol>
 
-#### Params as numpy array
 
 ```python
 >>> def sphere(x):
@@ -1101,63 +1205,36 @@ section.split {
 >>> res.params
 array([1., 1., 1.])
 ```
-
 </div>
 <div class=rightcol>
 
-#### Params as DataFrame
-
-<style scoped>
-table {
-  font-size: 28px;
-}
-
-.center {
-  margin-left: 100px;
-  margin-right: auto;
-}
-
-</style>
-
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>value</th>
-      <th>lower_bound</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>a</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>b</th>
-      <td>2</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>c</th>
-      <td>3</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>d</th>
-      <td>4</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-
+- Specify `lower_bounds` and `upper_bounds`
+- Use `np.inf` or `-np.inf` to represent no bounds
 
 </div>
 
 ---
 
-### How to specify bounds for pytrees
+### How to specify bounds for DataFrame params
+
+```python
+>>> params = pd.DataFrame({
+...         "value": [1, 2, 3],
+...         "lower_bounds": [1, 1, 1],
+...         "upper_bounds": [3, 3, 3],
+...     },
+...     index=["a", "b", "c"],
+... )
+
+>>> def criterion(p):
+...     return sphere(p.loc["value"])
+
+>>> em.minimize(criterion, params, algorithm="scipy_lbfgsb")
+```
+
+---
+
+### How to specify bounds for pytree params
 
 <!-- _class: split -->
 <style scoped>
@@ -1199,23 +1276,23 @@ res = em.minimize(
 
 ### Reparametrization example
 
-- Example:$min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
+- Example:$\min_x f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
 - Only defined if $x_1 \leq x_2$
 - Not a simple bound!
 - Reparametrization approach:
     - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
-    - Calculate $argmin_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
+    - Calculate $\text{argmin}_{x_1 \in R, \tilde{x}_2 \in R^+}\tilde{f}(x_1, \tilde{x}_2)$
     - Translate solution back into $x_1$ and $x_2$
 
 ---
 
-### Which constraints can be handled this way?
+### Which constraints can be handled via reparametrization?
 
 - Fixing parameters (simple but useful)
 - Find valid covariance and correlation matrices
 - Find valid probabilities
 - Linear constraints (as long as there are not too many)
-    - $min_x f(x) s.t. A_1 x = 0, A_2 x \leq 0$
+    - $\min_x f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
 - **Guaranteed to be fulfilled during optimization**
 
 ---
@@ -1339,12 +1416,12 @@ section.split {
 ### How to choose
 
 - Extremely expensive criterion (i.e. can only do a few evaluations):
-    -> Bayesian optimization
+    - Bayesian optimization
 - Differentiable function or least-squares structure and not too many local optima:
-    -> Multistart with a local optimizer tailored to function properties
+    - Multistart with a local optimizer tailored to function properties
 - Rugged function with extremely many local optima
-    -> Genetic optimizer
-    -> Consider refining the result with local optimizer
+    - Genetic optimizer
+    - Consider refining the result with local optimizer
 - All are equally parallelizable
 
 ---

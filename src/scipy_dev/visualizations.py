@@ -6,15 +6,15 @@ from estimagic import minimize
 from estimagic import params_plot
 
 
-def create_criterion_plot():
+def create_criterion_plot(kwargs):
     res = _get_optimize_result_for_criterion_and_profile_plot()
-    fig = criterion_plot(res, max_evaluations=300)
+    fig = criterion_plot(res, **kwargs)
     return fig
 
 
-def create_params_plot():
+def create_params_plot(kwargs):
     res = _get_optimize_result_for_criterion_and_profile_plot()
-    fig = params_plot(res, max_evaluations=300, selector=lambda params: params["c"])
+    fig = params_plot(res, max_evaluations=300, **kwargs)
     return fig
 
 

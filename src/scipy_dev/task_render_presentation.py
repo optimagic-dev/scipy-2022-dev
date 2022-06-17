@@ -31,7 +31,10 @@ bld_figures = [
     "gradient_descent.png",
     "curse_of_dimensionality_v.png",
     "criterion_plot.png",
-    "params_plot.png",
+    "criterion_plot_monotone.png",
+    "criterion_plot_max_evaluations.png",
+    # "params_plot.png",
+    # "params_plot_selector.png",
     "alpine.png",
     "ackley.png",
 ]
