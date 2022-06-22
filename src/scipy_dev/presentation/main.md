@@ -1803,7 +1803,7 @@ section.split {
 >>> gradient = jax.grad(sphere)
 
 >>> gradient(jnp.array([1., 1.5, 2.]))
-DeviceArray([2., 3., 4.], dtype=float32)
+DeviceArray([2., 3., 4.], dtype=float64)
 ```
 
 
@@ -1893,7 +1893,43 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 
 ---
 
+<!-- _class: split -->
 ### Vmap in JAX
+
+<div class=leftcol>
+
+```python
+>>> import jax.numpy as jnp
+>>> import jax.scipy as jsp
+>>> from jax import jit, vmap
+
+>>> a = jnp.ones((1, 2, 2))
+>>> jsp.linalg.lu(a)
+...
+ValueError: too many values to unpack (expected 2)
+
+>>> jax_lu = jit(vmap(jsp.linalg.lu))
+>>> jax_lu(a)
+(DeviceArray([[[1., 0.],
+               [0., 1.]]], dtype=float64),
+ DeviceArray([[[1., 0.],
+               [1., 1.]]], dtype=float64),
+ DeviceArray([[[1., 1.],
+               [0., 0.]]], dtype=float64))
+```
+</div>
+<div class=rightcol>
+
+- consider LU decomposition
+
+- not defined for arrays with dimension > 2 (in `jax.scipy` and `scipy`)
+
+- define vectorized map using `vmap`
+
+- need `jit` on the outside to recompile the new function
+
+
+</div>
 
 
 ---
