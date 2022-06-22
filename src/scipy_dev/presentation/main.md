@@ -1894,6 +1894,53 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 ---
 
 <!-- _class: split -->
+### Vmap
+
+<div class=leftcol>
+
+```python
+>>> import numpy as np
+>>> import scipy as sp
+
+>>> a = np.stack([np.diag([1, 2]), np.diag([3, 4])])
+>>> a[0]
+array([[ 1. , 0.],
+       [ 0. , 2.]])
+
+>>> sp.linalg.inv(a[0])
+array([[ 1. , -0. ],
+       [ 0. ,  0.5]])
+
+>>> sp.linalg.inv(a)
+... ValueError: expected square matrix
+
+>>> res = [sp.linalg.inv(a[i]) for i in [0, 1]]
+>>> np.stack(res)
+array([[[ 1.        , -0.        ],
+        [ 0.        ,  0.5       ]],
+       [[ 0.33333333, -0.        ],
+        [ 0.        ,  0.25      ]]])
+```
+</div>
+<div class=rightcol>
+
+- consider matrix inversion
+
+- not defined for arrays with dimension > 2 (in `scipy`)
+
+- loop over 2d matrices
+
+- syntactic sugar: `np.vectorize` and the like
+
+    - does not increase speed
+
+
+</div>
+
+
+---
+
+<!-- _class: split -->
 ### Vmap in JAX
 
 <div class=leftcol>
@@ -1901,36 +1948,30 @@ DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
 ```python
 >>> import jax.numpy as jnp
 >>> import jax.scipy as jsp
->>> from jax import jit, vmap
+>>> from jax import vmap, jit
 
->>> a = jnp.ones((1, 2, 2))
->>> jsp.linalg.lu(a)
-...
-ValueError: too many values to unpack (expected 2)
+>>> a = jnp.array(a)
 
->>> jax_lu = jit(vmap(jsp.linalg.lu))
->>> jax_lu(a)
-(DeviceArray([[[1., 0.],
-               [0., 1.]]], dtype=float64),
- DeviceArray([[[1., 0.],
-               [1., 1.]]], dtype=float64),
- DeviceArray([[[1., 1.],
-               [0., 0.]]], dtype=float64))
+>>> jax_inv = jit(vmap(jsp.linalg.inv))
+
+>>> jax_inv(a)
+DeviceArray([[[1.        , 0.        ],
+              [0.        , 0.5       ]],
+
+             [[0.33333333, 0.        ],
+              [0.        , 0.25      ]]], dtype=float64)
 ```
 </div>
 <div class=rightcol>
 
-- consider LU decomposition
+- use `jax.numpy` and `jax.scipy`
 
-- not defined for arrays with dimension > 2 (in `jax.scipy` and `scipy`)
+- define vectorized map using `jax.vmap`
 
-- define vectorized map using `vmap`
-
-- need `jit` on the outside to recompile the new function
+- need `jit` on the outside to compile the new function
 
 
 </div>
-
 
 ---
 
