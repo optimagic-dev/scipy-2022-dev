@@ -51,5 +51,12 @@ section.split h3 {
     font-size: 50px;
 }
 
-section.split .leftcol { grid-area: leftpanel; }
-section.split .rightcol { grid-area: rightpanel; }
+section.split .leftcol {
+    grid-area: leftpanel;
+    padding: 0px 10px 0px 0px;
+}
+section.split .rightcol {
+    grid-area: rightpanel;
+    padding: 0px 0px 0px 10px;
+
+}

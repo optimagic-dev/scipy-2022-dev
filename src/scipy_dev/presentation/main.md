@@ -307,7 +307,7 @@ LinAlgError: Singular matrix
 ### What is estimagic?
 
 - Library for difficult numerical optimization
-- Additional tools for nonlinear estimation
+- Tools for nonlinear estimation
 - Wraps many other optimizer libraries:
     - Scipy, Nlopt, TAO, Pygmo, ...
 - Harmonized interface
@@ -501,7 +501,11 @@ style="display: block;"/>
 </div>
 <div class=rightcol>
 
-- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
+- First argument can be:
+    - `OptimizeResult`
+    - path to log file
+    - list or dict thereof
+- Dictionary keys are used for legend
 
 </div>
 
@@ -523,8 +527,8 @@ style="display: block;"/>
 </div>
 <div class=rightcol>
 
-- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
 - `monotone=True` shows the current best value
+- useful if there are extreme values in history
 
 </div>
 
@@ -546,8 +550,6 @@ style="display: block;"/>
 </div>
 <div class=rightcol>
 
-- First argument can be a `OptimizeResult`, path to log file or list/dict thereof
-- `monotone=True` shows the current best value
 - `max_evaluations` sets upper limit of x-axis
 
 </div>
@@ -619,7 +621,6 @@ em.params_plot(
 
 <img src="../../../bld/figures/params_plot_selector.png" alt="params_plot_selector" width="500"/>
 
-- Similar options as `criterion_plot`
 - `selector` is a function returning a subset of params
 
 </div>
@@ -669,27 +670,6 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
     - ...
 
 </div>
-
----
-
-### Constraints have to hold
-
-```python
->>> em.minimize(
-...     criterion=sphere,
-...     params=np.array([1, 2, 3, 4, 5]),
-...     algorithm="scipy_lbfgsb",
-...     constraints=[{
-...         "loc": [0, 1, 2],
-...         "type": "probability"
-...     }],
-... )
-InvalidParamsError: A constraint of type 'probability' is not fulfilled in params,
-please make sure that it holds for the starting values. The problem arose because:
-Probabilities do not sum to 1. The names of the involved parameters are: ['0', '1', '2']
-The relevant constraint is:
-{'loc': [0, 1, 2], 'type': 'probability', 'index': array([0, 1, 2])}.
-```
 
 ---
 
@@ -978,7 +958,7 @@ array([0., 0., 0., 0., 0.])
 - Developed by Fabian Fröhlich as a Python package
 - Many advanced options to customize the optimization!
 - Criterion must be differentiable
-- Good solution if scipy_lbfgsb picks too extreme parameters that cause numerical overflow
+- Good solution if `scipy_lbfgsb` is too aggressive
 
 ---
 
@@ -986,9 +966,9 @@ array([0., 0., 0., 0., 0.])
 
 - **B**ound **O**ptimization **by** **Q**uadratic **A**pproximation
 - Derivative free trust region algorithm
-- `nlopt` version has less overhead
-- `nag` version has advanced options to deal with noise
-- Good choice for non-differentiable but not too noisy functions
+- `nlopt` has less overhead
+- `nag` has options to deal with noise
+- Good for non-differentiable not too noisy functions
 - Slower than derivative based methods but faster than neldermead
 
 ---
@@ -996,16 +976,15 @@ array([0., 0., 0., 0., 0.])
 ### `scipy_neldermead`, `nlopt_neldermead`
 
 - Popular direct search method
-- `nlopt` version supports bounds
-- `nlopt` version requires much fewer criterion evaluations in most benchmarks
-- Never the best choice but often not the worst
-- Can be very precise if run long enough
+- `nlopt` supports bounds
+- `nlopt` requires fewer criterion evaluations in most benchmarks
+- Almost never the best choice but sometimes not the worst
 
 ---
 
 ### `scipy_ls_lm`, `scipy_ls_trf`
 
-- Derivative based optimizers for least squares problems
+- Derivative based optimizers for nonlinear least squares
 - Criterion needs the structure: $F(x) = \sum_i f_i(x)^2$
 - In estimagic, criterion function must return a dictionary:
 
@@ -1021,9 +1000,9 @@ def sphere_ls(x):
 
 ### `nag_dfols`, `pounders`
 
-- Derivative free trust region method for nonlinear least-squares problems
+- Derivative free trust region method for nonlinear least-squares
 - Both beat bobyqa for least-squares problems!
-- `nag_dfols` is fastest and usually requires fewest criterion evaluations
+- `nag_dfols` is usually fastest
 - `nag_dfols` has advanced options to deal with noise
 - `pounders` can do criterion evaluations in parallel
 
@@ -1032,9 +1011,8 @@ def sphere_ls(x):
 ### `ipopt`
 
 - Interior point optimizer for problems with nonlinear constraints
-- Probably the best open source optimizer for large constrained problems
+- Probably best open source optimizer for nonlinear constraints
 - We wrap it via `cyipopt`
-- Difficult to install on windows
 
 ---
 <!-- _class: lead -->
@@ -1097,13 +1075,58 @@ results = em.run_benchmark(
 ---
 ### Profile plots
 
-<img src="../graphs/benchmark.png" alt="profile_plot" width="900"/>
+```python
+em.profile_plot(problems, results)
+```
+
+<img src="../graphs/benchmark.png" alt="profile_plot" width="700"/>
 
 ---
 
 ### Convergence plots
 
-<img src="../graphs/convergence_plot.png" alt="convergence_plot" width="900"/>
+
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 300px 800px;
+}
+</style>
+
+
+<div class=leftcol>
+
+```python
+subset = [
+    "chebyquad_10",
+    "chnrsbne",
+    "penalty_1",
+    "bdqrtic_8",
+]
+em.convergence_plot(
+    problems,
+    results,
+    problem_subset=subset,
+)
+```
+
+</div>
+<div class=rightcol>
+
+<img src="../graphs/convergence_plot.png" alt="convergence_plot" width="750"/>
+
+</div>
+
+
+---
+
+### Why not look at runtime
+
+- Benchmark functions are very fast (microseconds)
+    -> Runtime dominated by algorithm overhead
+- Most real functions are slow (milliseconds, seconds, minutes, ...)
+    -> Runtime dominated by number of evaluations
+
 
 ---
 
@@ -1398,6 +1421,27 @@ array([ 1.25, 1.05, 0.85, 0.65, 0.2 , -0.])
 
 ---
 
+### Constraints have to hold
+
+```python
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.array([1, 2, 3, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints=[{
+...         "loc": [0, 1, 2],
+...         "type": "probability"
+...     }],
+... )
+InvalidParamsError: A constraint of type 'probability' is not fulfilled in params,
+please make sure that it holds for the starting values. The problem arose because:
+Probabilities do not sum to 1. The names of the involved parameters are: ['0', '1', '2']
+The relevant constraint is:
+{'loc': [0, 1, 2], 'type': 'probability', 'index': array([0, 1, 2])}.
+```
+
+---
+
 
 ### Nonlinear constraints
 <!-- _class: split -->
@@ -1440,14 +1484,13 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 
 ### Parameter selection methods
 
-- The `"loc"` field can be replaced other things for some params formats
+- `"loc"` can be replaced other things
 - If params is a DataFrame with "value" column
     - `"query"`: An arbitrary query string that selects the relevant rows
     - `"loc"`: Will be passed to `DataFrame.loc`
-- With all params formats
-    - `"selector"`: A python function that takes params as arguments and returns a subset of params
-
-
+- Always
+    - `"selector"`: A function that takes params as argument and returns a subset of params
+- More in the [documentation](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html#how-to-select-the-parameters)
 ---
 
 
@@ -1470,7 +1513,7 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 - Global: Find best local optimum
     - Needs bounds to be well defined
     - Extremely challenging in high dimensions
-- Global and local optimization are the same for convex problems
+- Same for convex problems
 
 ---
 
@@ -1569,12 +1612,11 @@ section.split {
 
 ### What is scaling
 
-- Single most underrated topic among economists who do optimization!
+- Single most underrated topic among economists!
 - Well scaled: A fixed step in any parameter dimension yields roughly comparable changes in function value
-    - $f(x_1, x_2) = 0.5 x_1 + 0.8 x_2$
+    - $f(a, b) = 0.5 a^2 + 0.8 b^2$
 - Badly scaled: Some parameters are much more influential
-    - $f(x_1, x_2) = 1000 x_1 + 0.2 x_2$
-    - $f(x_1, x_2) = e^{x_1} + \sqrt{x_2}$
+    - $f(a, b) = 1000 a^2 + 0.2 b^2$
 - Often arises when parameters have very different units
 
 ---
@@ -1619,7 +1661,7 @@ section.split {
 ```python
 
 def badly_scaled(x):
-    return 0.01 * x[0] + x[1] + x[2] ** 6
+    return 0.01 * np.abs(x[0]) + np.abs(x[1]) + (x[2] - 0.9) ** 6
 
 em.minimize(
     criterion=badly_scaled,
@@ -1664,8 +1706,8 @@ em.minimize(
     criterion=badly_scaled,
     params=np.array([200, 1, 1]),
     scaling=True,
-    lower_bounds=np.array([-200, 0, 0.9]),
-    upper_bounds=np.array([500, 2, 1.1]),
+    lower_bounds=np.array([-200, -2, 0.8]),
+    upper_bounds=np.array([600, 2, 1]),
     scaling=True,
     scaling_options={"method": "bounds"},
 )
@@ -1768,8 +1810,8 @@ section.split {
 
 - **Automatic differentiation**
     - Magic way to calculate precise derivatives of Python functions
-    - Gradient calculation takes about 3 times longer than function
-    - Runtime independent of parameters
+    - Gradient calculation takes 3 to 4 times longer than function
+    - Runtime is independent of number of parameters
     - Code must be written in a certain way
 - **Numerical differentiation**
     - Finite step approximation to derivatives
@@ -1787,7 +1829,7 @@ section.split {
     - Hessians
 - Just in time compiler for python code
 - Composable function transformations such as `vmap`
-- It's a life changing library!
+- The 2nd best Python package (after estimagic)
 
 ---
 
@@ -1840,11 +1882,8 @@ section.split {
 
 #### When to use it
 
-- Simple optimization problems
-
-    - But many
-
-- Robustness to hyper-parameters
+- Solve many instances of same optimization problem
+- Differentiate optimization w.r.t hyperparameters
 
 </div>
 
@@ -2047,3 +2086,31 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 
 <!-- _class: lead -->
 # Practice Session 8: Vectorized optimization in JAXopt (15 min)
+
+---
+
+<!-- _class: lead -->
+# Summary
+
+---
+
+### Summary: Libraries
+
+- Use scipy if you want as few dependencies as possible
+- Use jaxopt for:
+    - batch optimization of many small problems
+    - differentiating optimizers w.r.t tuning parameters
+- Use estimagic if you need:
+    - Access to a huge number of optimizers
+    - Advanced diagnostics
+    - Advanced options such as scaling
+
+---
+
+### Summary: Underrated topics
+
+- Exploit least squares structure if you can
+- Try multiple algorithms and take the best
+- Try to improve the scaling of your problem
+- Use multistart over genetic algorithms if finding local optima is easy
+- Make your problem jax compatible and use automatic differentiation
