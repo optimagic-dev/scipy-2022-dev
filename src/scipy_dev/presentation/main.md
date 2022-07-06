@@ -1625,7 +1625,7 @@ section.split {
 - Evaluate criterion on random exploration sample
 - Run local optimization from best point
 - In each iteration:
-    - Combines best parameter and next best exploration point
+    - Combine best parameter and next best exploration point
     - Run local optimization from there
 - Converge if current best optimum was rediscovered several times
 - Use any estimagic algorithm for local optimization
