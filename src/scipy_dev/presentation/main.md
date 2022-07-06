@@ -170,7 +170,7 @@ section.split {
 
 ### In this talk
 
-- Nonlinear optimization with
+Nonlinear optimization with:
 - Continuous parameters
 - (Non)linear constraints
 - Global optimization
@@ -239,7 +239,7 @@ array([0.0, 0.0])
 - No parallelization
 - Maximization via sign flipping
 - No diagnostics tools
-- No feedback before termination or in case of crash
+- No feedback before termination or in case of a crash
 - No built-in multistart, benchmarking, scaling, or logging
 - Parameters are 1d numpy arrays
 
@@ -852,9 +852,9 @@ array([0., 0., 0., 0., 0.])
 
 <div class=rightcol>
 
-- Same options have same name
+- The same options have the same name
 - Different options have different names
-    - e.g. not one `tol`
+    - e.g., not one `tol`
 - Ignore irrelevant options
 
 </div>
@@ -1048,7 +1048,7 @@ def sphere_ls(x):
 
 - Derivative free trust region method for nonlinear least-squares
 - Both beat bobyqa for least-squares problems!
-- `nag_dfols` is usually fastest
+- `nag_dfols` is usually the fastest
 - `nag_dfols` has advanced options to deal with noise
 - `pounders` can do criterion evaluations in parallel
 
@@ -1172,7 +1172,7 @@ em.convergence_plot(
 - Benchmark functions are very fast (microseconds)
     -> Runtime dominated by algorithm overhead
 - Most real functions are slow (milliseconds, seconds, minutes, ...)
-    -> Runtime dominated by number of evaluations
+    -> Runtime dominated by the number of evaluations
 
 - Exceptions will be discussed later (jaxopt)
 
@@ -1374,8 +1374,8 @@ res = em.minimize(
 ### Which constraints can be handled via reparametrization?
 
 - Fixing parameters (simple but useful)
-- Find valid covariance and correlation matrices
-- Find valid probabilities
+- Finding valid covariance and correlation matrices
+- Finding valid probabilities
 - Linear constraints (as long as there are not too many)
     - $\min f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
 - **Guaranteed to be fulfilled during optimization**
@@ -1469,7 +1469,7 @@ array([ 1.25, 1.05, 0.85, 0.65, 0.2 , -0.])
 </div>
 <div class=rightcol>
 
-- Imposes that average of first 4 parameters is larger than 0.95
+- Impose that average of first 4 parameters is larger than 0.95
 - Weights can be scalars or same length as selected parameters
 - Use "value" instead of "lower_bound" for linear equality constraint
 
@@ -1529,7 +1529,7 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 <div class=rightcol>
 
 - Restrict the product of first five parameters to 1
-- Only works with some optimizers
+- Only work with some optimizers
 - `func` can be an arbitrary python function of params that returns a number, array or pytree
 - Use "lower_bound" and "upper_bound" instead of "value" for inequality constraints
 
@@ -1625,7 +1625,7 @@ section.split {
 - Evaluate criterion on random exploration sample
 - Run local optimization from best point
 - In each iteration:
-    - Combine best parameter and next best exploration point
+    - Combines best parameter and next best exploration point
     - Run local optimization from there
 - Converge if current best optimum was rediscovered several times
 - Use any estimagic algorithm for local optimization
@@ -1652,7 +1652,7 @@ section.split {
     - Large `"n_sample"`
     - Low `"share_optimizations"`
     - Weak convergence criteria
-    - Refine result with stricter convergence criteria
+    - Refine results with stricter convergence criteria
 - Few local optima:
     - Stick with defaults
 
