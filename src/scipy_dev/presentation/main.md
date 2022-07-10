@@ -58,8 +58,8 @@ University of Bonn
 
 - Website: [janosg.com](https://janosg.com)
 - GitHub: [janosg](https://github.com/janosg/)
-- Original author of estimagic
-- Submitted PhD thesis, looking for interesting jobs soon
+- Started estimagic in 2019
+- Just submitted PhD thesis, looking for jobs soon
 
 </div>
 <div class=rightcol>
@@ -76,19 +76,28 @@ University of Bonn
 
 ---
 
-### Index
+### Sections
 
-1. What is numerical optimization
-2. Introduction to `scipy.optimize`
-3. Introduction to `estimagic`
-4. Choosing algorithms
-5. Advanced `estimagic`
-6. Jax and Jaxopt
+1. Introduction to `scipy.optimize`
+2. Introduction to `estimagic`
+3. Choosing algorithms
+4. Advanced topics
+5. Jax and Jaxopt
+
+---
+
+### Structure of each topic
+
+1. Summary of exercise you will solve
+2. Some theory
+3. Syntax in very simplified example
+4. You solve a more difficult example in a notebook
+5. Discuss one possible solution
 
 ---
 
 <!-- _class: lead -->
-# What is numerical optimization
+# Introduction to scipy.optimize
 
 ---
 
@@ -103,13 +112,13 @@ section.split {
 
 <div class=leftcol>
 
-- Parameters $x_1$, $x_2$
-- **Criterion** $f(x_1, x_2) = x_1^2 + x_2^2$
-- Want: $x_1^*, x_2^* = \text{argmin} f(x_1, x_2)$
+- **Criterion** $f(a, b) = a^2 + b^2$
+- Parameters $a$, $b$
+- Want: $a^*, b^* = \text{argmin} f(a, b)$
 - Possible extensions:
     - Constraints
     - Bounds
-- Optimum at $(0, 0)$ with function value $0$
+- Optimum at $a^*=0$, $b^*=0$, $f(a^*,b^*) = 0$
 
 </div>
 
@@ -120,46 +129,6 @@ section.split {
 
 </div>
 
----
-
-
-<!-- _class: split -->
-<style scoped>
-section.split {
-    grid-template-columns: 550px 550px;
-    grid-template-areas:
-        "leftpanel rightpanel";
-}
-</style>
-
-
-<div class=leftcol>
-
-### In this talk
-
-Nonlinear optimization with:
-- Continuous parameters
-- (Non)linear constraints
-- Global optimization
-- Diagnostics and strategies for difficult problems
-
-</div>
-<div class=rightcol>
-
-### Not covered
-
-- Linear programming
-- Mixed integer programming
-- Stochastic gradient descent
-- Fitting neural networks
-
-</div>
-
-
----
-
-<!-- _class: lead -->
-# Introduction to scipy.optimize
 
 ---
 
@@ -170,7 +139,8 @@ Nonlinear optimization with:
 >>> from scipy.optimize import minimize
 
 >>> def sphere(x):
-...     return np.sum(x ** 2)
+        a, b = x
+...     return a ** 2 + b ** 2
 
 >>> x0 = np.ones(2)
 >>> res = minimize(sphere, x0)
@@ -187,7 +157,7 @@ array([0.0, 0.0])
     - some support bounds
     - some support constraints
 - Parameters are 1d arrays
-- Maximization is done by minimizing $- f(x)$
+- Maximize by minimizing $- f(x)$
 - Different interfaces for:
     - global optimization
     - nonlinear least-squares
@@ -199,16 +169,38 @@ array([0.0, 0.0])
 # Practice Session 1: First optimization with scipy.optimize (15 min)
 
 ---
+<!-- _class: split -->
+<style scoped>
+    section.split {
+        grid-template-columns: 550px 550px;
+        grid-template-areas:
+            "leftpanel rightpanel";
+    }
 
-### Shortcomings of scipy.optimize
+</style>
+<div class=leftcol>
 
-- Very few algorithms
+#### Pros
+
+- Very mature and reliable
+- No additional dependencies
+- Low overhead
+- Enough algorithms for many use-cases
+
+
+</div>
+<div class=rightcol>
+
+#### Cons
+
+- Relatively few algorithms
 - No parallelization
 - Maximization via sign flipping
-- No diagnostics tools
-- No feedback before termination or in case of a crash
-- No built-in multistart, benchmarking, scaling, or logging
-- Parameters are 1d numpy arrays
+- Feedback only at end
+- No feedback in case of crash
+- Parameters are flat arrays
+
+</div>
 
 ---
 
@@ -274,12 +266,11 @@ LinAlgError: Singular matrix
 
 ### What is estimagic?
 
-- Library for difficult numerical optimization
+- Library for numerical optimization
 - Tools for nonlinear estimation and inference
-- Wraps many other optimizer libraries:
+- Harmonized interface to:
     - Scipy, Nlopt, TAO, Pygmo, ...
-- Harmonized interface
-- A lot of additional functionality
+- Adds functionality and convenience
 
 ---
 
@@ -295,23 +286,24 @@ section.split {
 
 ```python
 >>> import estimagic as em
-
 >>> def sphere(x):
-...    return np.sum(x ** 2)
+       a, b = x
+...    return a ** 2 + b ** 2
 
 >>> res = em.minimize(
 ...     criterion=sphere,
-...     params=np.arange(5),
+...     params=np.ones(2),
 ...     algorithm="scipy_lbfgsb",
 ... )
 
 >>> res.params
-array([ 0., -0., -0., -0., -0.])
+array([ 0., 0])
 ```
 </div>
 <div class=rightcol>
 
-- But there is no default algorithm
+- No default algorithm
+- Options have different names
 
 </div>
 
@@ -330,6 +322,7 @@ section.split {
 <div class=leftcol>
 
 ```python
+>>> params = {"a": 0, "b": 1, "c": pd.Series([2, 3, 4])}
 >>> def dict_sphere(x):
 ...     out = (
 ...         x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
@@ -338,7 +331,7 @@ section.split {
 
 >>> res = em.minimize(
 ...     criterion=dict_sphere,
-...     params={"a": 0, "b": 1, "c": pd.Series([2, 3, 4])},
+...     params=params,
 ...     algorithm="scipy_neldermead",
 ... )
 
@@ -364,7 +357,7 @@ section.split {
 
 ---
 
-### Informative OptimizeResult
+### OptimizeResult
 
 ```
 >>> res
@@ -423,9 +416,6 @@ section.split {
 ...    params=np.arange(5),
 ...    algorithm="scipy_lbfgsb",
 ...    logging="my_log.db",
-...    log_options={
-...       "if_database_exists": "replace"
-...    },
 ... )
 
 >>> from estimagic import OptimizeLogReader
@@ -442,11 +432,11 @@ array([0., 0.817, 1.635, 2.452, 3.27 ])
 
 <div class=rightcol>
 
-- Persistent log of parameters and criterion values
-- Thread safe sqlite database
-- No data loss, even if computer is unplugged
-- Can be read while optimization is running
+- Persistent log in sqlite database
+- No data loss ever
+- Can be read during optimization
 - Provides data for dashboard
+- No SQL knowledge needed
 
 </div>
 
@@ -537,11 +527,13 @@ section.split {
 
 
 ```python
+# reminder: params looks like this
 params = {
     "a": 0,
     "b": 1,
     "c": pd.Series([2, 3, 4])
 }
+
 em.params_plot(
     res,
     max_evaluations=300,
@@ -572,11 +564,6 @@ section.split {
 
 
 ```python
-params = {
-    "a": 0,
-    "b": 1,
-    "c": pd.Series([2, 3, 4])
-}
 em.params_plot(
     res,
     max_evaluations=300,
@@ -614,7 +601,7 @@ array([ 0.,  0.,  0.,  0., 0.])
 
 <!-- _class: split -->
 
-### Harmonized as much as possible but not more
+### Harmonized algo_options
 
 <style scoped>
 section.split {
@@ -652,40 +639,17 @@ array([0., 0., 0., 0., 0.])
 
 </div>
 
+
 ---
 
 <!-- _class: split -->
-<style scoped>
-    section.split {
-        grid-template-columns: 630px 470px;
-    }
-    section.split .leftcol {
-        grid-area: leftpanel;
-        padding: 40px 10px 0px 0px;
-    }
-</style>
 
-### Online Documentation
+### [estimagic.readthedocs.io](https://estimagic.readthedocs.io/en/stable/index.html)
 
-<div class=leftcol>
-
-<center><img src="../graphs/docs.png" alt="docs" width="600"/></center>
-
-</div>
-<div class=rightcol>
-
-
-- [estimagic.readthedocs.io](https://estimagic.readthedocs.io/en/stable/index.html)
-- Quickstart
-- Detailed How-To guides
-- Explanations
-- API
-
-</div>
+<img src="../graphs/docs.png" alt="docs" width="600"/>
 
 
 ---
-
 
 
 <!-- ===================================================================================
@@ -716,11 +680,12 @@ array([0., 0., 0., 0., 0.])
 
 - **Smoothness**: Differentiable? Kinks? Discontinuities? Stochastic?
 - **Convexity**: Are there local optima?
+- **Goal**: Do you need a global solution? How precise?
 - **Size**: 2 parameters? 10? 100? 1000? More?
 - **Constraints**: Bounds? Linear constraints? Nonlinear constraints?
 - **Structure**: Nonlinear least-squares, Log-likelihood function
-- **Goal**: Do you need a global solution? How precise?
-- Properties guide selection but experimentation is important
+
+-> Properties guide selection but experimentation is important
 
 ---
 
@@ -793,9 +758,7 @@ def sphere_ls(x):
 
 ### `ipopt`
 
-- Interior point optimizer for problems with nonlinear constraints
 - Probably best open source optimizer for nonlinear constraints
-- We wrap it via `cyipopt`
 
 ---
 <!-- _class: lead -->
@@ -911,56 +874,14 @@ em.convergence_plot(
 - Most real functions are slow (milliseconds, seconds, minutes, ...)
     -> Runtime dominated by the number of evaluations
 
-- Exceptions will be discussed later (jaxopt)
+- You can do runtime plots as well
 
-
----
-
-
-### Advanced options
-
-<!-- _class: split -->
-<style scoped>
-section.split {
-    grid-template-columns: 450px 650px;
-}
-</style>
-
-
-<div class=leftcol>
-
-```python
-problems = em.get_benchmark_problems(
-    name="example",
-    additive_noise=True,
-    additive_noise_options={
-        "distribution": "normal",
-        "std": 0.2,
-    },
-    scaling=True,
-    scaling_options={
-        "min_scale": 0.1,
-        "max_scale": 1000,
-    }
-)
-```
-
-</div>
-<div class=rightcol>
-
-- Add noise and scaling issues
-- Choices:
-    - estimagic: small and large problems
-    - more_wild: small least squares problems
-    - example: subset of more_wild
-
-</div>
 
 ---
 
 
 <!-- _class: lead -->
-# Practice Session 4: Benchmarking optimizers (10 min)
+# Practice Session 4: Benchmarking optimizers (15 min)
 
 ---
 
@@ -975,30 +896,25 @@ problems = em.get_benchmark_problems(
 ==================================================================================== -->
 
 <!-- _class: lead -->
-# Advanced estimagic
+# Advanced Topics
 
 ---
 
 <!-- _class: lead -->
-# Constraints
+# Bounds and Constraints
 
 ---
 
+### Bounds
 
-### Terminology of constraints in estimagic
+- Lower and upper bounds on parameters
+- Also called box constraints
+- Handled by most algorithms
+- Need to hold for start parameters
+- Guaranteed to hold during entire optimization
+- Specification depends on `params` format
 
-
-- Constraints are conditions on parameters
-- Can make problems simpler or more difficult
-- bounds: $\min_{x} f(x)$ s.t. $l \leq x \leq u$
-    - handled by most algorithms
-- estimagic constraints:
-    - handled by estimagic via reparametrization
-- nonlinear constraints: $\min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
-    - handled by some algorithms
-    - can be violated during optimization
 ---
-
 
 ### How to specify bounds for array params
 
@@ -1095,16 +1011,65 @@ res = em.minimize(
 
 ---
 
-### Reparametrization example
 
-- Example: $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
-- Only defined for $x_1 \leq x_2$
-- Solve: $\min f(x_1, x_2) \text{ s.t. } x_1 \leq x_2$
-- Not a simple bound!
-- Reparametrization approach:
-    - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
-    - Solve: $\min \tilde{f}(x_1, \tilde{x}_2) \text{ s.t. } \tilde{x}_2 \geq 0$
-    - Translate solution back into $x_1$ and $x_2$
+### Constraints
+
+
+- Constraints are conditions on parameters
+- Linear constraints
+    - $\min_{x} f(x) s.t. l \leq A x \leq u$
+    - $\min_{x} f(x) s.t. A x = v$
+- Nonlinear constraints:
+    - $\min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
+- "estimagic-constraints":
+    - E.g. find probabilities or covariance matrix, fix parameters, ...
+
+---
+
+
+### Example: Find valid probabilities
+
+<!-- _class: split -->
+
+<style scoped>
+section.split {
+    grid-template-columns: 550px 550px;
+}
+</style>
+<div class=leftcol>
+
+```python
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints=[{
+...         "loc": [0, 1, 2],
+...         "type": "probability"
+...     }],
+... )
+
+>>> res.params
+array([0.33334, 0.33333, 0.33333, -0., 0.])
+```
+</div>
+<div class=rightcol>
+
+- Restrict first 3 parameters to be probabilities
+    - Between 0 and 1
+    - Sum to 1
+- But "scipy_lbfsb" is unconstrained?!
+
+</div>
+
+---
+
+### What happened
+
+- Estimagic can implement some types of constraints via reparametrization
+- Transforms a constrained problem into an unconstrained one
+- Constraints must hold in start params
+- Guaranteed to hold during entire optimization
 
 ---
 
@@ -1115,21 +1080,6 @@ res = em.minimize(
 - Finding valid probabilities
 - Linear constraints (as long as there are not too many)
     - $\min f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
-- **Guaranteed to be fulfilled during optimization**
-
----
-
-
-### Do not try at home
-
-- Easy to make mistakes when implementing this
-    - forget to transform start parameters
-    - forget to translate back
-    - forget to adjust derivative
-    - confuse directions
-    - use non-differentiable transformations
-- **Estimagic does reparametrizations for you!**
-- **Completely hides transformed x**
 
 ---
 
@@ -1168,7 +1118,6 @@ array([ 2.5,  0.8,  0.6,  0.4,  0.2, -2.5])
 
 - `loc` selects location 0 and 5 of the parameters
 - `type` states that they are fixed
-- Other selection methods will be explained later
 
 </div>
 
@@ -1287,7 +1236,7 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 
 
 <!-- _class: lead -->
-# Practice Session 5: Constrained optimization (10 min)
+# Practice Session 5: Constrained optimization (15 min)
 
 
 ---
@@ -1305,7 +1254,7 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 - Global: Find best local optimum
     - Needs bounds to be well defined
     - Extremely challenging in high dimensions
-- Same for convex problems
+- Local = global for convex problems
 
 ---
 
@@ -1331,25 +1280,10 @@ section.split {
 
 </div>
 
----
-
-### Brute force vs. smarter algorithm
-<!-- _class: split -->
-<div class=leftcol>
-
-<img src="../../../bld/figures/grid_search.png" alt="brute-force" width="400" class="center"/>
-
-</div>
-<div class=rightcol>
-
-<img src="../../../bld/figures/gradient_descent.png" alt="smart" width="400" class="center"/>
-
-</div>
-
 
 ---
 
-### Complexity of brute force
+### How about brute force?
 <!-- _class: split -->
 <style scoped>
 section.split {
@@ -1409,17 +1343,50 @@ table {
 
 ---
 
-### Multistart optimization (in estimagic)
+### Multistart optimization:
 
-- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak) by Fatih Guvenen and Serdar Ozkan
 - Evaluate criterion on random exploration sample
 - Run local optimization from best point
 - In each iteration:
     - Combine best parameter and next best exploration point
     - Run local optimization from there
-- Converge if current best optimum was rediscovered several times
-- Use any estimagic algorithm for local optimization
-- Can distinguish soft and hard bounds
+- Converge if current best optimum is rediscovered several times
+
+---
+
+<!-- _class: split -->
+
+### Multistart example
+<div class=leftcol>
+
+
+```python
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_neldermead",
+...     soft_lower_bounds=np.full(5, -5),
+...     soft_upper_bounds=np.full(5, 15),
+...     multistart=True,
+...     multistart_options={
+...         "convergence.max_discoveries": 5,
+...         "n_samples": 1000
+...     },
+... )
+>>> res.params
+array([0., 0., 0., 0.,  0.])
+```
+
+
+</div>
+<div class=rightcol>
+
+- Turn local optimizers global
+- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
+- Use any optimizer
+- Distinguish hard and soft bounds
+
+</div>
 
 ---
 
@@ -1427,24 +1394,12 @@ table {
 
 - Extremely expensive criterion (i.e. can only do a few evaluations):
     - Bayesian optimization
-- Differentiable function or least-squares structure and not too many local optima:
-    - Multistart with a local optimizer tailored to function properties
+- Well behaved function:
+    - Multistart with local optimizer tailored to function properties
 - Rugged function with extremely many local optima
     - Genetic optimizer
     - Consider refining the result with local optimizer
 - All are equally parallelizable
-
----
-
-### Advanced multistart
-
-- Many local optima:
-    - Large `"n_sample"`
-    - Low `"share_optimizations"`
-    - Weak convergence criteria
-    - Refine results with stricter convergence criteria
-- Few local optima:
-    - Stick with defaults
 
 ---
 
@@ -1487,12 +1442,6 @@ problems_bad_scaling = get_benchmark_problems(
 ### Effect of bad scaling: `scipy_lbfgsb`
 
 <img src="../graphs/scaling_scipy_lbfgsb.png" alt="scaling_lbfgsb" width="900"/>
-
----
-
-### Effect of bad scaling: `fides`
-
-<img src="../graphs/scaling_fides.png" alt="scaling_fides" width="900"/>
 
 ---
 
@@ -1540,7 +1489,6 @@ em.minimize(
 <div class=rightcol>
 
 - Optimizer sees x / x_start
-- Works without bounds
 - Will recover that x[0] needs large steps
 - Won't recover that x[2] needs tiny steps
 
@@ -1630,18 +1578,13 @@ section.split {
 
 ---
 <!-- _class: lead -->
-# Practice Session 6: Scaling of optimization problems (10 min)
+# Practice Session 6: Scaling of optimization problems (15 min)
 
 
 
 <!-- ===================================================================================
 # Last hour
 ==================================================================================== -->
-
-
-
-
-
 
 
 ---
@@ -1669,7 +1612,6 @@ section.split {
     - Hessians
 - Just in time compiler for python code
 - Composable function transformations such as `vmap`
-- The 2nd best Python package (after estimagic)
 
 ---
 
@@ -1687,6 +1629,43 @@ section.split {
 >>> gradient(jnp.array([1., 1.5, 2.]))
 DeviceArray([2., 3., 4.], dtype=float64)
 ```
+
+---
+
+### Providing derivatives to estimagic
+
+<!-- _class: split -->
+<div class=leftcol>
+
+```python
+>>> def sphere_gradient(params):
+...     return 2 * params
+
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     derivative=sphere_gradient,
+... )
+
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     numdiff_options={"n_cores": 6},
+... )
+```
+
+</div>
+
+<div class=rightcol>
+
+- You can provide derivatives
+- Otherwise, estimagic calculates them numerically
+- Parallelization on (up to) as many cores as parameters
+
+</div>
+
 
 
 ---
@@ -1930,30 +1909,18 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ---
 
 <!-- _class: lead -->
-# Summary
+# Final remarks
 
 ---
 
-### Summary: Libraries
 
-- Use scipy if you want as few dependencies as possible
-- Use jaxopt for:
-    - batch optimization of many small problems
-    - differentiating optimizers w.r.t tuning parameters
-- Use estimagic if you need:
-    - Access to a huge number of optimizers
-    - Advanced diagnostics
-    - Advanced options such as scaling
-
----
-
-### Summary: Tips
+### Tips
 
 - Exploit least squares structure if you can
 - Look at criterion and params plots
 - Try multiple algorithms (based on theory) and take the best (based on experiments)
-- Try to improve the scaling of your problem
-- Use multistart over genetic algorithms if finding local optima is easy
+- Think about scaling
+- Use multistart over genetic algorithms for well behaved functions
 - Make your problem jax compatible and use automatic differentiation
 
 
