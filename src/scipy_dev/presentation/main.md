@@ -5,11 +5,30 @@ author: Janos Gabler and Tim Mensinger
 description: "Scipy 2022: Estimagic Tutorial"
 theme: custom
 ---
+<!-- ===================================================================================
+# INSTALLATION SLIDE
+==================================================================================== -->
+<!-- paginate: false -->
+
+## Installation
+
+We assume you have done the following:
+
+```console
+git clone https://github.com/OpenSourceEconomics/scipy-estimagic.git
+cd scipy-estimagic
+conda env create -f environment.yml
+conda activate scipy-estimagic
+```
+
+- If you haven't done so, do it now
+- Remember to start jupyter notebooks from within the environment
+
+---
 
 <!-- ===================================================================================
 # TITLE PAGE
 ==================================================================================== -->
-
 <!-- paginate: false -->
 
 ## Practical Numerical Optimization with Scipy, Estimagic and JAXopt
@@ -85,7 +104,7 @@ section.split {
 <div class=leftcol>
 
 - Parameters $x_1$, $x_2$
-- Criterion $f(x_1, x_2) = x_1^2 + x_2^2$
+- **Criterion** $f(x_1, x_2) = x_1^2 + x_2^2$
 - Want: $x_1^*, x_2^* = \text{argmin} f(x_1, x_2)$
 - Possible extensions:
     - Constraints
@@ -103,58 +122,6 @@ section.split {
 
 ---
 
-### Brute force vs. smarter algorithm
-<!-- _class: split -->
-<div class=leftcol>
-
-<img src="../../../bld/figures/grid_search.png" alt="brute-force" width="400" class="center"/>
-
-</div>
-<div class=rightcol>
-
-<img src="../../../bld/figures/gradient_descent.png" alt="smart" width="400" class="center"/>
-
-</div>
-
-
----
-
-### Complexity of brute force
-<!-- _class: split -->
-<style scoped>
-section.split {
-    grid-template-columns: 400px 700px;
-}
-</style>
-
-
-<div class=leftcol>
-
-<img src="../../../bld/figures/curse_of_dimensionality_v.png" alt="dimensionality" width="180" class="center"/>
-
-</div>
-<div class=rightcol>
-
-<style scoped>
-table {
-  font-size: 30px;
-}
-</style>
-
-
-| Number of <br /> Dimensions | Runtime (1 ms per evaluation, <br /> 100 points per dimension) |
-| ----------------------------| ---------------------------------------------------------------|
-| 1                           | 100 ms                                                         |
-| 2                           | 10 s                                                           |
-| 3                           | 16 min                                                         |
-| 4                           | 27 hours                                                       |
-| 5                           | 16 weeks                                                       |
-| 6                           | 30 years                                                       |
-
-</div>
-
-
----
 
 <!-- _class: split -->
 <style scoped>
@@ -206,7 +173,7 @@ Nonlinear optimization with:
 ...     return np.sum(x ** 2)
 
 >>> x0 = np.ones(2)
->>> res = minimize(f, x0)
+>>> res = minimize(sphere, x0)
 >>> res.fun
 0.0
 >>> res.x
@@ -628,95 +595,6 @@ em.params_plot(
 
 ---
 
-### Unified interface to (collections of) algorithms
-
-- **Nlopt**: Local and global algorithms by Stephen Johnson (MIT)
-- **Pygmo**: Global algorithms by Franceso Biscani and Dario Izzo (ESA)
-- **fides**: Pure Python algorithm by Fabian Fröhlich (Harvard)
-- **TAO**: Toolkit for advanced optimization (Argonne national lab)
-- **Cyipopt**: Python bindings to **IPOPT** by Andreas Wächter (Northwestern)
-- **NAG**: Numerical algorithms group (Oxford)
-- **estimagic**: A few algorithms we could not find elsewhere
-- **List not exhaustive and will add more soon (it is quite easy)**
----
-
-<!-- _class: split -->
-
-### Use constraints with any optimizer
-
-<style scoped>
-section.split {
-    grid-template-columns: 550px 550px;
-}
-</style>
-<div class=leftcol>
-
-```python
->>> res = em.minimize(
-...     criterion=sphere,
-...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
-...     algorithm="scipy_lbfgsb",
-...     constraints=[{
-...         "loc": [0, 1, 2],
-...         "type": "probability"
-...     }],
-... )
-
->>> res.params
-array([0.33334, 0.33333, 0.33333, -0., 0.])
-```
-</div>
-<div class=rightcol>
-
-- lbfgsb is unconstrained
-- estimagic transforms constrained problems into unconstrained ones
-- Supported constraints:
-    - linear
-    - probability
-    - covariance
-    - ...
-
-</div>
-
----
-
-<!-- _class: split -->
-
-### Closed-form or parallel numerical derivatives
-<div class=leftcol>
-
-```python
->>> def sphere_gradient(params):
-...     return 2 * params
-
->>> em.minimize(
-...     criterion=sphere,
-...     params=np.arange(5),
-...     algorithm="scipy_lbfgsb",
-...     derivative=sphere_gradient,
-... )
-
->>> em.minimize(
-...     criterion=sphere,
-...     params=np.arange(5),
-...     algorithm="scipy_lbfgsb",
-...     numdiff_options={"n_cores": 6},
-... )
-```
-
-</div>
-
-<div class=rightcol>
-
-- You can provide derivatives
-- Otherwise, estimagic calculates them numerically
-- Parallelization on (up to) as many cores as parameters
-
-</div>
-
-
----
-
 ### There is maximize
 
 ```python
@@ -731,91 +609,6 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 >>> res.params
 array([ 0.,  0.,  0.,  0., 0.])
 ```
-
-
----
-
-<!-- _class: split -->
-
-### Multistart framework
-<div class=leftcol>
-
-
-```python
->>> res = em.minimize(
-...     criterion=sphere,
-...     params=np.arange(5),
-...     algorithm="scipy_neldermead",
-...     soft_lower_bounds=np.full(5, -5),
-...     soft_upper_bounds=np.full(5, 15),
-...     multistart=True,
-...     multistart_options={
-...         "convergence.max_discoveries": 5,
-...         "n_samples": 1000
-...     },
-... )
->>> res.params
-array([0., 0., 0., 0.,  0.])
-```
-
-
-</div>
-<div class=rightcol>
-
-- Turn local optimizers global
-- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
-- **Exploration** on random sample
-- Local optimizations from best points
-- Use any optimizer
-
-</div>
-
-
----
-
-<!-- _class: split -->
-
-<style scoped>
-section.split {
-    grid-template-columns: 470px 630px;
-}
-</style>
-
-### Exploit structure of $F$
-
-<div class=leftcol>
-
-```python
->>> def general_sphere(params):
-...     contribs = params ** 2
-...     out = {
-...         "root_contributions": params,
-...         "contributions": contribs,
-...         "value": contribs.sum(),
-...     }
-...     return out
-
->>> res = em.minimize(
-...     criterion=general_sphere,
-...     params=np.arange(5),
-...     algorithm="pounders",
-... )
->>> res.params
-array([0., 0., 0., 0., 0.])
-```
-
-</div>
-
-<div class=rightcol>
-
-- Common structures
-    - $F(x) = \sum_if_i(x)^2$ (least squares)
-    - $F(x) = \sum_if_i(x)$ (e.g. log-likelihood)
-- Huge speed-ups
-- Increased robustness
-
-</div>
-
 
 ---
 
@@ -872,7 +665,7 @@ array([0., 0., 0., 0., 0.])
     }
 </style>
 
-### Well documented
+### Online Documentation
 
 <div class=leftcol>
 
@@ -894,68 +687,7 @@ array([0., 0., 0., 0., 0.])
 ---
 
 
-### The estimagic Team
 
-
-<style scoped>
-.center {
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 24px;
-}
-
-</style>
-
-
-<table class="center">
-    <tr>
-        <th>
-            <img src="../graphs/janos.jpg" alt="janos" width="190"/>
-            <br>
-            Janos
-        </th>
-        <th>
-            <img src="../graphs/tim.jpeg" alt="tim" width="190"/>
-            <br>
-            Tim
-        </th>
-        <th>
-            <img src="../graphs/klara.jpg" alt="klara" width="190"/>
-            <br>
-            Klara
-        </th>
-    </tr>
-    <tr>
-        <th>
-            <img src="../graphs/sebi.jpg" alt="sebastian" width="190"/>
-            <br>
-            Sebastian
-        </th>
-        <th>
-            <img src="../graphs/tobi.png" alt="tobi" width="190"/>
-            <br>
-            Tobias
-        </th>
-        <th>
-            <img src="../graphs/hmg.jpg" alt="hmg" width="190"/>
-            <br>
-            Hans-Martin
-        </th>
-    </tr>
-</table>
-
----
-
-### Thanks to
-
-- All [contributors](https://estimagic.readthedocs.io/en/stable/credits.html#contributors) to estimagic
-- [Kenneth Judd](https://kenjudd.org/) for feedback and funding of a research visit
-- [Gregor Reich](https://www.linkedin.com/in/gregor-reich-707a4358/?originalSubdomain=ch) for feedback
-- All authors of the amazing algorithms we are wrapping
-- The University of Bonn and [TRA-1 Modelling](https://www.uni-bonn.de/en/research-and-teaching/research-profile/transdisciplinary-research-areas/tra-1-modelling/about?set_language=en) for funding
-- [Collaborative Research Center Transregio 224](https://www.crctr224.de/en) for funding
-
----
 <!-- ===================================================================================
 # Second hour
 ==================================================================================== -->
@@ -972,6 +704,11 @@ array([0., 0., 0., 0., 0.])
 
 <!-- _class: lead -->
 # Choosing algorithms
+
+---
+### Preview of next exercise
+
+- Slide titles represent algorithm names
 
 ---
 
@@ -1596,6 +1333,59 @@ section.split {
 
 ---
 
+### Brute force vs. smarter algorithm
+<!-- _class: split -->
+<div class=leftcol>
+
+<img src="../../../bld/figures/grid_search.png" alt="brute-force" width="400" class="center"/>
+
+</div>
+<div class=rightcol>
+
+<img src="../../../bld/figures/gradient_descent.png" alt="smart" width="400" class="center"/>
+
+</div>
+
+
+---
+
+### Complexity of brute force
+<!-- _class: split -->
+<style scoped>
+section.split {
+    grid-template-columns: 400px 700px;
+}
+</style>
+
+
+<div class=leftcol>
+
+<img src="../../../bld/figures/curse_of_dimensionality_v.png" alt="dimensionality" width="180" class="center"/>
+
+</div>
+<div class=rightcol>
+
+<style scoped>
+table {
+  font-size: 30px;
+}
+</style>
+
+
+| Number of <br /> Dimensions | Runtime (1 ms per evaluation, <br /> 100 points per dimension) |
+| ----------------------------| ---------------------------------------------------------------|
+| 1                           | 100 ms                                                         |
+| 2                           | 10 s                                                           |
+| 3                           | 16 min                                                         |
+| 4                           | 27 hours                                                       |
+| 5                           | 16 weeks                                                       |
+| 6                           | 30 years                                                       |
+
+</div>
+
+
+---
+
 ### Genetic algorithms
 
 - Heuristic inspired by natural selection
@@ -1841,20 +1631,6 @@ section.split {
 ---
 <!-- _class: lead -->
 # Practice Session 6: Scaling of optimization problems (10 min)
-
-
-
-
-
----
-
-### How to contribute
-
-- Make issues or provide feedback
-- Improve or extend the documentation
-- Suggest, wrap or implement new optimizers
-- Teach estimagic to colleagues, students and friends
-- Make us happy by giving us a :star: on [github.com/OpenSourceEconomics/estimagic](https://github.com/OpenSourceEconomics/estimagic)
 
 
 
@@ -2179,3 +1955,67 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 - Try to improve the scaling of your problem
 - Use multistart over genetic algorithms if finding local optima is easy
 - Make your problem jax compatible and use automatic differentiation
+
+
+---
+
+### The estimagic Team
+
+
+<style scoped>
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 24px;
+}
+
+</style>
+
+
+<table class="center">
+    <tr>
+        <th>
+            <img src="../graphs/janos.jpg" alt="janos" width="190"/>
+            <br>
+            Janos
+        </th>
+        <th>
+            <img src="../graphs/tim.jpeg" alt="tim" width="190"/>
+            <br>
+            Tim
+        </th>
+        <th>
+            <img src="../graphs/klara.jpg" alt="klara" width="190"/>
+            <br>
+            Klara
+        </th>
+    </tr>
+    <tr>
+        <th>
+            <img src="../graphs/sebi.jpg" alt="sebastian" width="190"/>
+            <br>
+            Sebastian
+        </th>
+        <th>
+            <img src="../graphs/tobi.png" alt="tobi" width="190"/>
+            <br>
+            Tobias
+        </th>
+        <th>
+            <img src="../graphs/hmg.jpg" alt="hmg" width="190"/>
+            <br>
+            Hans-Martin
+        </th>
+    </tr>
+</table>
+
+
+---
+
+### How to contribute
+
+- Make issues or provide feedback
+- Improve or extend the documentation
+- Suggest, wrap or implement new optimizers
+- Teach estimagic to colleagues, students and friends
+- Make us happy by giving us a :star: on [github.com/OpenSourceEconomics/estimagic](https://github.com/OpenSourceEconomics/estimagic)
