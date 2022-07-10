@@ -1095,18 +1095,6 @@ res = em.minimize(
 
 ---
 
-### Reparametrization example
-
-- Example: $f(x_1, x_2) = \sqrt{x_2 - x_1} + x_2^2$
-- Only defined for $x_1 \leq x_2$
-- Solve: $\min f(x_1, x_2) \text{ s.t. } x_1 \leq x_2$
-- Not a simple bound!
-- Reparametrization approach:
-    - Define $\tilde{x}_2 = x_2 - x_1$ and $\tilde{f}(x_1, \tilde{x}_2) = \sqrt{\tilde{x}_2} + (x_1 + \tilde{x}_2)^2$
-    - Solve: $\min \tilde{f}(x_1, \tilde{x}_2) \text{ s.t. } \tilde{x}_2 \geq 0$
-    - Translate solution back into $x_1$ and $x_2$
-
----
 
 ### Which constraints can be handled via reparametrization?
 
@@ -1728,6 +1716,16 @@ section.split {
 </div>
 
 
+---
+### Example
+
+Economic problem:
+
+- Many agents facing similar optimization problem
+    - batchable
+- Gradient of log-likelihood requires gradient of solutions
+    - differentiable solutions
+
 
 ---
 
@@ -1750,7 +1748,7 @@ section.split {
 
 >>> result = solver.run(init_params=x0, shift=shift)
 >>> result.params
-DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
+DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ```
 
 </div>
@@ -1866,12 +1864,12 @@ DeviceArray([[[1.        , 0.        ],
 ...     return solver.run(init_params=x, shift=shift).params
 
 >>> batch_solve = jit(vmap(solve, in_axes=(None, 0)))
->>> weights = jnp.array([
+>>> shifts = jnp.array([
         [0.0, 1.0, 2.0],
         [3.0, 4.0, 5.0]
     ])
 
->>> batch_solve(x0, weights)
+>>> batch_solve(x0, shifts)
 DeviceArray([[ 0. , -0.5, -1. ],
              [-1.5, -2. , -2.5]], dtype=float64)
 ```
@@ -1905,11 +1903,6 @@ DeviceArray([[-0.5,  0. ,  0. ],
              [ 0. , -0.5,  0. ],
              [ 0. ,  0. , -0.5]], dtype=float64)
 
->>> solve(x0, weight)
-DeviceArray([ 0. , -0.5, -1. ], dtype=float64)
-
->>> solve(x0, weight + 1)
-DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 ```
 </div>
 <div class=rightcol>
@@ -1918,7 +1911,7 @@ DeviceArray([-0.5, -1. , -1.5], dtype=float64)
 
 - import `jacobian` or `grad`
 
-- use `argnums` to specify by which argument we differentiate
+- use `argnums` to specify w.r.t. which argument we differentiate
 
 </div>
 
