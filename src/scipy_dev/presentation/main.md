@@ -10,19 +10,18 @@ theme: custom
 ==================================================================================== -->
 <!-- paginate: false -->
 
-## Installation
 
-We assume you have done the following:
+### Installation
 
+We assume you have done the following: Installed [miniconda](https://docs.conda.io/en/latest/miniconda.html) and
 ```console
 git clone https://github.com/OpenSourceEconomics/scipy-estimagic.git
 cd scipy-estimagic
 conda env create -f environment.yml
 conda activate scipy-estimagic
 ```
-
-- If you haven't done so, do it now
-- Remember to start jupyter notebooks from within the environment
+- If you haven't done so, please do so until the first practice session
+- Details: https://github.com/OpenSourceEconomics/scipy-estimagic
 
 ---
 
@@ -100,7 +99,13 @@ University of Bonn
 # Introduction to scipy.optimize
 
 ---
+### Preview of practice session
 
+- Translate a criterion function from math to code
+  
+- Use `scipy.optimize` to minimize the criterion function
+
+---
 ### Example problem
 
 <!-- _class: split -->
@@ -263,7 +268,13 @@ LinAlgError: Singular matrix
 # Introduction to estimagic
 
 ---
+### Preview of practice session
 
+- Translate a `scipy` optimization to `estimagic.minimize`
+- Use dictionaries instead of flat arrays as parameters in the optimization
+- Plot the optimization history (criterion and parameter)
+
+---
 ### What is estimagic?
 
 - Library for numerical optimization
@@ -670,9 +681,12 @@ array([0., 0., 0., 0., 0.])
 # Choosing algorithms
 
 ---
-### Preview of next exercise
+### Preview of practice session
 
-- Slide titles represent algorithm names
+You will get optimization problems that fail
+
+- Figure out why they fail
+- Choose an algorithm that works
 
 ---
 
@@ -765,7 +779,16 @@ def sphere_ls(x):
 # Practice Session 3: Play with `algorithm` and `algo_options` (20 min)
 
 ---
+<!-- _class: lead -->
+# Benchmarking
 
+---
+### Preview of practice session
+
+- Compare different optimizers on benchmark sets
+- Visualize comparison using profile and convergence plots
+
+---
 ### What is benchmarking
 
 - Compare algorithms on functions with known optimum
@@ -889,19 +912,22 @@ em.convergence_plot(
 <!-- _class: lead -->
 # Break (10 min)
 
----
-
 <!-- ===================================================================================
 # Third hour
 ==================================================================================== -->
-
-<!-- _class: lead -->
-# Advanced Topics
 
 ---
 
 <!-- _class: lead -->
 # Bounds and Constraints
+--- 
+
+### Preview of practice session
+
+- Solve optimization problem with
+    - parameter bounds
+    - fixed parameters
+    - linear constraints
 
 ---
 
@@ -1406,6 +1432,12 @@ array([0., 0., 0., 0.,  0.])
 <!-- _class: lead -->
 # Scaling
 
+---
+### Preview of practice session
+
+- Learn about badly scaled problems
+- Visualize sensitiviy of criterion w.r.t parameters
+- Use scaling to improve an optimization
 
 ---
 
@@ -1585,6 +1617,16 @@ section.split {
 # Last hour
 ==================================================================================== -->
 
+---
+<!-- _class: lead -->
+# JAX and JAXopt
+
+--- 
+### Preview of practice session(s)
+
+- Solve an optimization problem using JAX gradients
+- Solve an optimization problem using JAXopt
+- Write a batched solver using JAXopt
 
 ---
 
