@@ -1,42 +1,3 @@
----
-<!-- _class: split -->
-
-### Use constraints with any optimizer
-
-<style scoped>
-section.split {
-    grid-template-columns: 550px 550px;
-}
-</style>
-<div class=leftcol>
-
-```python
->>> res = em.minimize(
-...     criterion=sphere,
-...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
-...     algorithm="scipy_lbfgsb",
-...     constraints=[{
-...         "loc": [0, 1, 2],
-...         "type": "probability"
-...     }],
-... )
-
->>> res.params
-array([0.33334, 0.33333, 0.33333, -0., 0.])
-```
-</div>
-<div class=rightcol>
-
-- lbfgsb is unconstrained
-- estimagic transforms constrained problems into unconstrained ones
-- Supported constraints:
-    - linear
-    - probability
-    - covariance
-    - ...
-
-</div>
-
 
 
 # move to closed form dereivative
@@ -76,94 +37,66 @@ array([0.33334, 0.33333, 0.33333, -0., 0.])
 
 </div>
 
-
-
-
-
 ---
 
+### Brute force vs. smarter algorithm
 <!-- _class: split -->
-
-### Multistart framework
 <div class=leftcol>
 
-
-```python
->>> res = em.minimize(
-...     criterion=sphere,
-...     params=np.arange(5),
-...     algorithm="scipy_neldermead",
-...     soft_lower_bounds=np.full(5, -5),
-...     soft_upper_bounds=np.full(5, 15),
-...     multistart=True,
-...     multistart_options={
-...         "convergence.max_discoveries": 5,
-...         "n_samples": 1000
-...     },
-... )
->>> res.params
-array([0., 0., 0., 0.,  0.])
-```
-
+<img src="../../../bld/figures/grid_search.png" alt="brute-force" width="400" class="center"/>
 
 </div>
 <div class=rightcol>
 
-- Turn local optimizers global
-- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
-- **Exploration** on random sample
-- Local optimizations from best points
-- Use any optimizer
+<img src="../../../bld/figures/gradient_descent.png" alt="smart" width="400" class="center"/>
 
 </div>
 
 
 
 
-
-
 ---
 
-<!-- _class: split -->
 
+
+
+### Advanced options
+
+<!-- _class: split -->
 <style scoped>
 section.split {
-    grid-template-columns: 470px 630px;
+    grid-template-columns: 450px 650px;
 }
 </style>
 
-### Exploit structure of $F$
 
 <div class=leftcol>
 
 ```python
->>> def general_sphere(params):
-...     contribs = params ** 2
-...     out = {
-...         "root_contributions": params,
-...         "contributions": contribs,
-...         "value": contribs.sum(),
-...     }
-...     return out
-
->>> res = em.minimize(
-...     criterion=general_sphere,
-...     params=np.arange(5),
-...     algorithm="pounders",
-... )
->>> res.params
-array([0., 0., 0., 0., 0.])
+problems = em.get_benchmark_problems(
+    name="example",
+    additive_noise=True,
+    additive_noise_options={
+        "distribution": "normal",
+        "std": 0.2,
+    },
+    scaling=True,
+    scaling_options={
+        "min_scale": 0.1,
+        "max_scale": 1000,
+    }
+)
 ```
 
 </div>
-
 <div class=rightcol>
 
-- Common structures
-    - $F(x) = \sum_if_i(x)^2$ (least squares)
-    - $F(x) = \sum_if_i(x)$ (e.g. log-likelihood)
-- Huge speed-ups
-- Increased robustness
+- Choices:
+    - estimagic: small and large problems
+    - more_wild: small least squares problems
+    - example: subset of more_wild
+- Add noise and scaling issues
 
 </div>
 
+---
