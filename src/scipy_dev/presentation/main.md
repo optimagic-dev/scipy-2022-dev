@@ -1770,8 +1770,8 @@ Economic problem:
 >>> import jax.numpy as jnp
 >>> from jaxopt import LBFGS
 
->>> x0 = jnp.array([1.0, 2, 3])
->>> shift = x0.copy()
+>>> x0 = jnp.array([1.0, -2, -5])
+>>> shift = jnp.array([-2.0, -4, -6])
 
 >>> def criterion(x, shift):
 ...     return jnp.vdot(x, x + shift)
@@ -1780,7 +1780,7 @@ Economic problem:
 
 >>> result = solver.run(init_params=x0, shift=shift)
 >>> result.params
-DeviceArray([-0.5, -1. , -1.5], dtype=float64)
+DeviceArray([1.0, 2.0, 3.0], dtype=float64)
 ```
 
 </div>

@@ -10,7 +10,7 @@ def is_installed(executable):
 # Check Installations
 # ======================================================================================
 
-required_estimagic_version = "0.3.2"
+required_estimagic_version = "0.4.0"
 
 try:
     import estimagic  # noqa: F401
