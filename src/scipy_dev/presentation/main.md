@@ -1,28 +1,9 @@
 ---
 paginate: true
 marp: true
-author: Janos Gabler and Tim Mensinger
+author: Janos Gabler, Tim Mensinger and Sebastian Gsell
 description: "Scipy 2022: Estimagic Tutorial"
 theme: custom
----
-<!-- ===================================================================================
-# INSTALLATION SLIDE
-==================================================================================== -->
-<!-- paginate: false -->
-
-
-### Installation
-
-We assume you have done the following: Installed [miniconda](https://docs.conda.io/en/latest/miniconda.html) and
-```console
-git clone https://github.com/OpenSourceEconomics/scipy-estimagic.git
-cd scipy-estimagic
-conda env create -f environment.yml
-conda activate scipy-estimagic
-```
-- If you haven't done so, please do so until the first practice session
-- Details: https://github.com/OpenSourceEconomics/scipy-estimagic
-
 ---
 
 <!-- ===================================================================================
@@ -30,13 +11,13 @@ conda activate scipy-estimagic
 ==================================================================================== -->
 <!-- paginate: false -->
 
-## Practical Numerical Optimization with Scipy, Estimagic and JAXopt
+## Practical Nonlinear Optimization with Scipy and Estimagic
 
-Scipy Conference 2022
+Stanford Estimagic Workshop, 2022
 
 <br/>
 
-#### Janos Gabler & Tim Mensinger
+#### Janos Gabler, Tim Mensinger and Sebastian Gsell
 
 University of Bonn
 
@@ -49,61 +30,26 @@ University of Bonn
 
 <!-- paginate: true -->
 
-### About Us
-<!-- _class: split -->
-<div class=leftcol>
-
-<img src="../graphs/janos.jpg" alt="janos" width="200"/>
-
-- Website: [janosg.com](https://janosg.com)
-- GitHub: [janosg](https://github.com/janosg/)
-- Started estimagic in 2019
-- Just submitted PhD thesis, looking for jobs soon
-
-</div>
-<div class=rightcol>
-
-<img src="../graphs/tim.jpeg" alt="tim" width="200"/>
-
-- Website: [tmensinger.com](https://tmensinger.com)
-- GitHub: [timmens](https://github.com/timmens)
-- estimagic core contributor
-- PhD student in Econ, University of Bonn
-
-
-</div>
-
----
-
 ### Sections
 
 1. Introduction to `scipy.optimize`
 2. Introduction to `estimagic`
 3. Choosing algorithms
 4. Advanced topics
-5. Jax and Jaxopt
+5. Jax
 
 ---
 
 ### Structure of each topic
 
-1. Summary of exercise you will solve
-2. Some theory
-3. Syntax in very simplified example
-4. You solve a more difficult example in a notebook
-5. Discuss one possible solution
+1 Some theory
+2. Syntax in very simplified example
+3. We solve an example in a notebook
 
 ---
 
 <!-- _class: lead -->
 # Introduction to scipy.optimize
-
----
-### Preview of practice session
-
-- Translate a criterion function from math to code
-  
-- Use `scipy.optimize` to minimize the criterion function
 
 ---
 ### Example problem
@@ -171,7 +117,7 @@ array([0.0, 0.0])
 
 
 <!-- _class: lead -->
-# Practice Session 1: First optimization with scipy.optimize (15 min)
+# Practice Session 1: First optimization with scipy.optimize
 
 ---
 <!-- _class: split -->
@@ -266,13 +212,6 @@ LinAlgError: Singular matrix
 
 <!-- _class: lead -->
 # Introduction to estimagic
-
----
-### Preview of practice session
-
-- Translate a `scipy` optimization to `estimagic.minimize`
-- Use dictionaries instead of flat arrays as parameters in the optimization
-- Plot the optimization history (criterion and parameter)
 
 ---
 ### What is estimagic?
@@ -663,30 +602,13 @@ array([0., 0., 0., 0., 0.])
 ---
 
 
-<!-- ===================================================================================
-# Second hour
-==================================================================================== -->
 <!-- _class: lead -->
-# Break (5 min)
-
----
-
-
-<!-- _class: lead -->
-# Practice Session 2: Convert previous example to estimagic (15 min)
+# Practice Session 2: Convert previous example to estimagic
 
 ---
 
 <!-- _class: lead -->
 # Choosing algorithms
-
----
-### Preview of practice session
-
-You will get optimization problems that fail
-
-- Figure out why they fail
-- Choose an algorithm that works
 
 ---
 
@@ -776,17 +698,11 @@ def sphere_ls(x):
 
 ---
 <!-- _class: lead -->
-# Practice Session 3: Play with `algorithm` and `algo_options` (20 min)
+# Practice Session 3: Play with `algorithm` and `algo_options`
 
 ---
 <!-- _class: lead -->
 # Benchmarking
-
----
-### Preview of practice session
-
-- Compare different optimizers on benchmark sets
-- Visualize comparison using profile and convergence plots
 
 ---
 ### What is benchmarking
@@ -904,32 +820,15 @@ em.convergence_plot(
 
 
 <!-- _class: lead -->
-# Practice Session 4: Benchmarking optimizers (15 min)
+# Practice Session 4: Benchmarking optimizers
 
 ---
 
-
-<!-- _class: lead -->
-# Break (10 min)
-
-<!-- ===================================================================================
-# Third hour
-==================================================================================== -->
-
----
 
 <!-- _class: lead -->
 # Bounds and Constraints
 --- 
 
-### Preview of practice session
-
-- Solve optimization problem with
-    - parameter bounds
-    - fixed parameters
-    - linear constraints
-
----
 
 ### Bounds
 
@@ -1261,7 +1160,7 @@ array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
 
 
 <!-- _class: lead -->
-# Practice Session 5: Constrained optimization (15 min)
+# Practice Session 5: Constrained optimization
 
 
 ---
@@ -1433,13 +1332,6 @@ array([0., 0., 0., 0.,  0.])
 # Scaling
 
 ---
-### Preview of practice session
-
-- Learn about badly scaled problems
-- Visualize sensitiviy of criterion w.r.t parameters
-- Use scaling to improve an optimization
-
----
 
 ### What is scaling
 
@@ -1609,7 +1501,7 @@ section.split {
 
 ---
 <!-- _class: lead -->
-# Practice Session 6: Scaling of optimization problems (15 min)
+# Practice Session 6: Scaling of optimization problems
 
 
 
@@ -1619,17 +1511,9 @@ section.split {
 
 ---
 <!-- _class: lead -->
-# JAX and JAXopt
+# JAX
 
 --- 
-### Preview of practice session(s)
-
-- Solve an optimization problem using JAX gradients
-- Solve an optimization problem using JAXopt
-- Write a batched solver using JAXopt
-
----
-
 #### Numerical vs automatic differentiation (oversimplified)
 
 - **Automatic differentiation**
@@ -1712,245 +1596,8 @@ DeviceArray([2., 3., 4.], dtype=float64)
 ---
 
 <!-- _class: lead -->
-# Practice Session 7: Using JAX derivatives in estimagic (10 min)
+# Practice Session 7: Using JAX derivatives in estimagic
 
-
----
-<!-- _class: split -->
-<style scoped>
-section.split {
-    grid-template-columns: 600px 500px;
-    grid-template-areas:
-        "leftpanel rightpanel";
-}
-</style>
-<div class=leftcol>
-
-#### What is JAXopt
-
-- Library of optimizers written in JAX
-
-- Hardware accelerated
-
-- Batchable
-
-- Differentiable
-
-
-</div>
-<div class=rightcol>
-
-#### When to use it
-
-- Solve many instances of same optimization problem
-- Differentiate optimization w.r.t hyperparameters
-
-</div>
-
-
----
-### Example
-
-Economic problem:
-
-- Many agents facing similar optimization problem
-    - batchable
-- Gradient of log-likelihood requires gradient of solutions
-    - differentiable solutions
-
-
----
-
-### Simple optimization in JAXopt
-<!-- _class: split -->
-<div class=leftcol>
-
-```python
->>> import jax
->>> import jax.numpy as jnp
->>> from jaxopt import LBFGS
-
->>> x0 = jnp.array([1.0, -2, -5])
->>> shift = jnp.array([-2.0, -4, -6])
-
->>> def criterion(x, shift):
-...     return jnp.vdot(x, x + shift)
-
->>> solver = LBFGS(fun=criterion)
-
->>> result = solver.run(init_params=x0, shift=shift)
->>> result.params
-DeviceArray([1.0, 2.0, 3.0], dtype=float64)
-```
-
-</div>
-<div class=rightcol>
-
-<br>
-
-- import solver
-
-- initialize solver with criterion
-
-- run solver with starting parameters
-
-- pass additional arguments of criterion to run method
-
-</div>
-
-
-
----
-
-<!-- _class: split -->
-### Vmap
-
-<div class=leftcol>
-
-```python
->>> import numpy as np
->>> import scipy as sp
-
->>> a = np.stack([np.diag([1, 2]), np.diag([3, 4])])
->>> a[0]
-array([[ 1. , 0.],
-       [ 0. , 2.]])
-
->>> sp.linalg.inv(a[0])
-array([[ 1. , -0. ],
-       [ 0. ,  0.5]])
-
->>> sp.linalg.inv(a)
-... ValueError: expected square matrix
-
->>> res = [sp.linalg.inv(a[i]) for i in [0, 1]]
->>> np.stack(res)
-array([[[ 1.        , -0.        ],
-        [ 0.        ,  0.5       ]],
-       [[ 0.33333333, -0.        ],
-        [ 0.        ,  0.25      ]]])
-```
-</div>
-<div class=rightcol>
-
-- consider matrix inversion
-
-- not defined for arrays with dimension > 2 (in `scipy`)
-
-- loop over 2d matrices
-
-- syntactic sugar: `np.vectorize` and the like
-
-    - does not increase speed
-
-
-</div>
-
-
----
-
-<!-- _class: split -->
-### Vmap in JAX
-
-<div class=leftcol>
-
-```python
->>> import jax.numpy as jnp
->>> import jax.scipy as jsp
->>> from jax import vmap, jit
-
->>> a = jnp.array(a)
-
->>> jax_inv = jit(vmap(jsp.linalg.inv))
-
->>> jax_inv(a)
-DeviceArray([[[1.        , 0.        ],
-              [0.        , 0.5       ]],
-
-             [[0.33333333, 0.        ],
-              [0.        , 0.25      ]]], dtype=float64)
-```
-</div>
-<div class=rightcol>
-
-- use `jax.numpy` and `jax.scipy`
-
-- define vectorized map using `jax.vmap`
-
-- need `jit` on the outside to compile the new function
-
-
-</div>
-
----
-
-<!-- _class: split -->
-### Vectorize an optimization in JAXopt
-
-<div class=leftcol>
-
-```python
->>> from jax import jit, vmap
-
->>> def solve(x, shift):
-...     return solver.run(init_params=x, shift=shift).params
-
->>> batch_solve = jit(vmap(solve, in_axes=(None, 0)))
->>> shifts = jnp.array([
-        [0.0, 1.0, 2.0],
-        [3.0, 4.0, 5.0]
-    ])
-
->>> batch_solve(x0, shifts)
-DeviceArray([[ 0. , -0.5, -1. ],
-             [-1.5, -2. , -2.5]], dtype=float64)
-```
-</div>
-<div class=rightcol>
-
-- import `jit` and `vmap`
-
-- define wrapper around solve
-
-- call vmap on wrapper
-
-    - `in_axes=(None, 0)` means that we map over the 0-axis of the second argument
-
-    - call `jit` at the end
-
-</div>
-
----
-
-<!-- _class: split -->
-### Differentiate a solution in JAXopt
-
-<div class=leftcol>
-
-```python
->>> from jax import jacobian
-
->>> jacobian(solve, argnums=1)(x0, weight)
-DeviceArray([[-0.5,  0. ,  0. ],
-             [ 0. , -0.5,  0. ],
-             [ 0. ,  0. , -0.5]], dtype=float64)
-
-```
-</div>
-<div class=rightcol>
-
-<br>
-
-- import `jacobian` or `grad`
-
-- use `argnums` to specify w.r.t. which argument we differentiate
-
-</div>
-
----
-
-<!-- _class: lead -->
-# Practice Session 8: Vectorized optimization in JAXopt (15 min)
 
 ---
 
