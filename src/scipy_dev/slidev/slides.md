@@ -30,6 +30,8 @@ transition: slide-left
 
 We assume you have done the following: Installed [miniconda](https://docs.conda.io/en/latest/miniconda.html) and 
 
+
+
 ```console
 git clone https://github.com/OpenSourceEconomics/scipy-estimagic.git
 cd scipy-estimagic
@@ -42,8 +44,7 @@ conda activate scipy-estimagic
 - Details: https://github.com/OpenSourceEconomics/scipy-estimagic
 
 
----
-layout: cover
+
 ---
 
 # Practical Numerical Optimization with Scipy, Estimagic and JAXopt
@@ -90,6 +91,7 @@ University of Bonn
 
 
 ---
+
 ## Sections
 <br/>
 
@@ -122,8 +124,7 @@ University of Bonn
 5. Discuss one possible solution
 
 
----
-layout: cover
+
 ---
 # Introduction to scipy.optimize
 
