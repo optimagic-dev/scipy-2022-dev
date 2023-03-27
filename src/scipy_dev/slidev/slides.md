@@ -53,14 +53,14 @@ Scipy Conference 2022
 
 <br/>
 
-## Janos Gabler & Tim Mensinger
+### Janos Gabler & Tim Mensinger
 
 University of Bonn
 
 
 ---
 
-## About Us
+### About Us
 <br/>
 
 <div class="grid grid-cols-2 gap-4">
