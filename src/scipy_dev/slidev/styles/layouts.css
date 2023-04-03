@@ -1,0 +1,104 @@
+
+
+.css-1dbjc4n {
+top: 10px;
+}
+
+
+
+
+.slidev-layout {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0rem;
+  padding-bottom: 0rem;
+
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: space-around;
+  
+  h1 {
+      @apply text-5xl;
+      text-align: center;
+    }
+  
+  h2 {
+     @apply text-4xl;
+     line-height: 1rem;
+     position: fixed;
+     top: 5%;
+     margin: auto;
+
+
+  }
+
+  h3 {
+      @apply text-4xl;
+    }
+  
+    h4 {
+      @apply text-xl;
+    }
+  
+    h5 {
+      @apply text-base;
+    }
+  
+    h6 {
+      @apply text-sm pt-1 uppercase tracking-widest font-500 -ml-[0.05em];
+    }
+  
+    h6:not(.opacity-100) {
+      @apply opacity-40;
+      
+    }
+
+    code {
+      font-size : 1.5em;
+    }
+
+  } 
+
+  
+  /* .slidev-layout.cover,
+  .slidev-layout.intro {
+    @apply h-full grid;
+  
+    h1 {
+      @apply text-6xl leading-20;
+    }
+  }
+  
+  
+  .slidev-layout.fact {
+    @apply text-center grid h-full;
+    h1 {
+      @apply text-8xl font-700;
+    }
+    h1 + p {
+      @apply font-700 text-2xl;
+    }
+  }
+  .slidev-layout.statement {
+    @apply text-center grid h-full;
+  
+    h1 {
+      @apply text-6xl font-700;
+    }
+  }
+  .slidev-layout.quote {
+    @apply grid h-full;
+  
+    h1 + p {
+      @apply mt-2;
+    }
+  }
+  .slidev-layout.section {
+    h1 {
+      @apply text-6xl font-500 leading-20;
+    }
+  } */

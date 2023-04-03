@@ -1,11 +1,11 @@
 ---
 # try also 'default' to start simple
-theme: seriph
+theme: default
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
-background: https://source.unsplash.com/collection/94734566/1920x1080
+#background: https://source.unsplash.com/collection/94734566/1920x1080
 # apply any windi css classes to the current slide
-class: 'text-center'
+class: "text-left"
 # https://sli.dev/custom/highlighters.html
 highlighter: shiki
 # show line numbers in code blocks
@@ -22,388 +22,1934 @@ drawings:
 # page transition
 transition: slide-left
 # use UnoCSS
-css: unocss
+# css: unocss
 ---
 
-# Welcome to Slidev
+## Installation
 
-Presentation slides for developers
 
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
-  </span>
-</div>
+We assume you have done the following: Installed [miniconda](https://docs.conda.io/en/latest/miniconda.html) and 
 
-<div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon-logo-github />
-  </a>
-</div>
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
 
----
-transition: fade-out
----
-
-# What is Slidev?
-
-Slidev is a slides maker and presenter designed for developers, consist of the following features
-
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
-
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
-
-<!--
-Here is another comment.
--->
-
----
-transition: slide-up
----
-
-# Navigation
-
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
-
-### Keyboard Shortcuts
-
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
-
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
-
----
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
----
-
-# Code
-
-Use code snippets and get the highlighting directly![^1]
-
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-}
-
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
-}
+```python
+git clone https://github.com/OpenSourceEconomics/scipy-estimagic.git
+cd scipy-estimagic
+conda env create -f environment.yml
+conda activate scipy-estimagic
 ```
 
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
+- If you haven't done so, please do so until the first practice session
 
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
+- Details: https://github.com/OpenSourceEconomics/scipy-estimagic
 
-<style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
+
 
 ---
 
-# Components
+# Practical Numerical Optimization with Scipy, Estimagic and JAXopt
 
-<div grid="~ cols-2 gap-4">
+Scipy Conference 2022
+
+<br/>
+
+### Janos Gabler & Tim Mensinger
+
+University of Bonn
+
+
+---
+
+## About Us
+<br/>
+
+<div class="grid grid-cols-2 gap-4">
 <div>
 
-You can use Vue components directly inside your slides.
+<img src="/janos.jpg" alt="janos" width="200"/>
 
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
+- Website: [janosg.com](https://janosg.com)
+- GitHub: [janosg](https://github.com/janosg/)
+- Started estimagic in 2019
+- Just submitted PhD thesis, looking for jobs soon
 </div>
 <div>
 
-```html
-<Tweet id="1390115482657726468" />
+<img src="/tim.jpeg" alt="tim" width="200"/>
+
+- Website: [tmensinger.com](https://tmensinger.com)
+- GitHub: [timmens](https://github.com/timmens)
+- estimagic core contributor
+- PhD student in Econ, University of Bonn
+
+</div>
+</div>
+
+
+
+
+
+
+---
+
+## Sections
+<br/>
+
+1. Introduction to **scipy.optimize**
+
+2. Introduction to **estimagic**
+
+3. Choosing algorithms
+
+4. Advanced topics
+
+5. Jax and Jaxopt
+
+
+---
+
+
+## Structure of each topic
+
+<br/>
+
+1. Summary of exercise you will solve
+
+2. Some theory
+
+3. Syntax in very simplified example
+
+4. You solve a more difficult example in a notebook
+
+5. Discuss one possible solution
+
+
+
+---
+
+# Introduction to scipy.optimize
+
+
+---
+
+## Preview of practice session
+<br/>
+
+
+- Translate a criterion function from math to code
+  
+- Use **scipy.optimize** to minimize the criterion function
+
+
+---
+
+## Example problem
+<br/>
+
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+- **Criterion** $f(a, b) = a^2 + b^2$
+- Parameters $a$, $b$
+- Want: $a^*, b^* = \text{argmin} f(a, b)$
+- Possible extensions:
+    - Constraints
+    - Bounds
+- Optimum at $a^*=0$, $b^*=0$, $f(a^*,b^*) = 0$
+
+</div>
+
+<div>
+
+<img src="/figures/sphere.png" alt="sphere" width="450" class="center"/>
+
+</div>
+</div>
+
+---
+
+
+## Solve example problem with scipy.optimize
+
+```python
+>>> import numpy as np
+>>> from scipy.optimize import minimize
+
+>>> def sphere(x):
+        a, b = x
+...     return a ** 2 + b ** 2
+
+>>> x0 = np.ones(2)
+>>> res = minimize(sphere, x0)
+>>> res.fun
+0.0
+>>> res.x
+array([0.0, 0.0])
+```
+---
+
+
+
+## Features of scipy.optimize
+
+- **minimize** as unified interface to 14 local optimizers
+    - some support bounds
+    - some support constraints
+- Parameters are 1d arrays
+- Maximize by minimizing $- f(x)$
+- Different interfaces for:
+    - global optimization
+    - nonlinear least-squares
+
+---
+
+# Practice Session 1: First optimization with scipy.optimize (15 min)
+
+---
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+
+
+<div>
+
+
+## Pros
+
+- Very mature and reliable
+- No additional dependencies
+- Low overhead
+- Enough algorithms for many use-cases
+
+</div>
+
+<div>
+
+## Cons
+
+- Relatively few algorithms
+- No parallelization
+- Maximization via sign flipping
+- Feedback only at end
+- No feedback in case of crash
+- Parameters are flat arrays
+
+</div>
+
+</div>
+
+---
+
+
+## Examples from real projects I
+
+
+```python
+def parse_parameters(x):
+    """Parse the parameter vector into quantities we need."""
+    num_types = int(len(x[54:]) / 6) + 1
+    params = {
+        'delta': x[0:1],
+        'level': x[1:2],
+        'coeffs_common': x[2:4],
+        'coeffs_a': x[4:19],
+        'coeffs_b': x[19:34],
+        'coeffs_edu': x[34:41],
+        'coeffs_home': x[41:44],
+        'type_shares': x[44:44 + (num_types - 1) * 2],
+        'type_shifts': x[44 + (num_types - 1) * 2:]
+    }
+    return params
 ```
 
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
-
-
----
-class: px-20
 ---
 
-# Themes
+## Examples from real projects II
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
 
-<div grid="~ cols-2 gap-2" m="-t-2">
+```python
+>>> scipy.optimize.minimize(func, x0)
+---------------------------------------------------------------------------
+LinAlgError                               Traceback (most recent call last)
+<ipython-input-17-7459e5b4d8d4> in <module>
+----> 1 scipy.optimize.minimize(func, x0)
 
-```yaml
----
-theme: default
----
+     95
+     96 def _raise_linalgerror_singular(err, flag):
+---> 97     raise LinAlgError("Singular matrix")
+     98
+
+LinAlgError: Singular matrix
 ```
 
-```yaml
+- After 5 hours and with no additional information
+
 ---
-theme: seriph
+
+# Introduction to estimagic
+
 ---
+
+## Preview of practice session
+
+- Translate a **scipy** optimization to **estimagic.minimize**
+- Use dictionaries instead of flat arrays as parameters in the optimization
+- Plot the optimization history (criterion and parameter)
+
+---
+
+## What is estimagic?
+
+- Library for numerical optimization
+- Tools for nonlinear estimation and inference
+- Harmonized interface to:
+    - Scipy, Nlopt, TAO, Pygmo, ...
+- Adds functionality and convenience
+
+---
+
+
+## You can use it like scipy
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+
+<div>
+
+```python
+>>> import estimagic as em
+>>> def sphere(x):
+       a, b = x
+...    return a ** 2 + b ** 2
+
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.ones(2),
+...     algorithm="scipy_lbfgsb",
+... )
+
+>>> res.params
+array([ 0., 0])
+```
+</div>
+<div>
+
+- No default algorithm
+- Options have different names
+
+</div>
+</div>
+
+---
+
+## Params can be (almost) anything
+
+
+<div class="grid grid-cols-[60%,40%] gap-4">
+<div>
+```python
+>>> params = {"a": 0, "b": 1, "c": pd.Series([2, 3, 4])}
+>>> def dict_sphere(x):
+...     out = (
+...         x["a"] ** 2 + x["b"] ** 2 + (x["c"] ** 2).sum()
+...     )
+...     return out
+
+>>> res = em.minimize(
+...     criterion=dict_sphere,
+...     params=params,
+...     algorithm="scipy_neldermead",
+... )
+
+>>> res.params
+{'a': 0.,
+ 'b': 0.,
+ 'c': 0    0.
+      1    0.
+      2    0.
+ dtype: float64}
+```
+</div>
+
+<div>
+
+- numpy arrays
+- pd.Series, pd.DataFrame
+- scalars
+- (Nested) lists, dicts and tuples thereof
+- Special case: DataFrame with columns **"value"**, **"lower_bound"** and **"upper_bound"**
+</div>
+
+</div>
+
+---
+
+## OptimizeResult
+
+```
+>>> res
+Minimize with 5 free parameters terminated successfully after 805 criterion evaluations and 507 iterations.
+
+The value of criterion improved from 30.0 to 1.6760003634613059e-16.
+
+The scipy_neldermead algorithm reported: Optimization terminated successfully.
+
+Independent of the convergence criteria used by scipy_neldermead, the strength of convergence can be
+assessed by the following criteria:
+                             one_step     five_steps
+relative_criterion_change  1.968e-15***  2.746e-15***
+relative_params_change     9.834e-08*    1.525e-07*
+absolute_criterion_change  1.968e-16***  2.746e-16***
+absolute_params_change     9.834e-09**   1.525e-08*
+
+(***: change <= 1e-10, **: change <= 1e-8, *: change <= 1e-5. Change refers to a change between accepted
+steps. The first column only considers the last step. The second column considers the last five steps.)
 ```
 
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
-
----
-preload: false
 ---
 
-# Animations
+## Access OptimizeResult's attributes
 
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
+```python
+>>> res.criterion
+.0
+>>> res.n_criterion_evaluations
+805
+>>> res.success
+True
+>>> res.message
+'Optimization terminated successfully.'
+>>> res.history.keys():
+dict_keys(['params', 'criterion', 'runtime'])
 ```
 
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
+---
 
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
+## Logging and Dashboard
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+
+<div>
+
+```python
+>>> res = em.minimize(
+...    criterion=sphere,
+...    params=np.arange(5),
+...    algorithm="scipy_lbfgsb",
+...    logging="my_log.db",
+... )
+
+>>> from estimagic import OptimizeLogReader
+
+>>> reader = OptimizeLogReader("my_log.db")
+>>> reader.read_history().keys()
+dict_keys(['params', 'criterion', 'runtime'])
+
+>>> reader.read_iteration(1)["params"]
+array([0., 0.817, 1.635, 2.452, 3.27 ])
+```
+
 </div>
 
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
+<div>
+
+- Persistent log in sqlite database
+- No data loss ever
+- Can be read during optimization
+- Provides data for dashboard
+- No SQL knowledge needed
+
+</div>
+</div>
+
+
+---
+
+## Criterion plot
+<br/>
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+```python
+em.criterion_plot(res)
+```
+<img src="/figures/criterion_plot.png" alt="criterion" width="500" style="display: block;"/>
+
+
+</div>
+<div>
+
+- First argument can be:
+    - **OptimizeResult**
+    - path to log file
+    - list or dict thereof
+- Dictionary keys are used for legend
+
+</div>
+</div>
+
+
+
+---
+
+## Criterion plot (2)
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+```python
+em.criterion_plot(res, monotone=True)
+```
+<img src="/figures/criterion_plot_monotone.png" alt="criterion" width="500"
+style="display: block;"/>
+
+</div>
+<div>
+
+- **monotone=True** shows the current best value
+- useful if there are extreme values in history
+
+</div>
+</div>
+
+---
+
+## Criterion plot (3)
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+```python
+em.criterion_plot(res, max_evaluations=300)
+```
+<img src="/figures/criterion_plot_max_evaluations.png" alt="criterion" width="500"
+style="display: block;"/>
+
+
+</div>
+<div>
+
+- **max_evaluations** sets upper limit of x-axis
+
+</div>
+</div>
+
+---
+
+## Params plot
+
+<br/>
+
+<div class="grid grid-cols-[35%,65%] gap-4">
+
+
+<div>
+
+
+```python
+# reminder: params looks like this
+params = {
+    "a": 0,
+    "b": 1,
+    "c": pd.Series([2, 3, 4])
 }
-</script>
 
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
+em.params_plot(
+    res,
+    max_evaluations=300,
+)
+```
 
-[Learn More](https://sli.dev/guide/animations.html#motion)
+</div>
+<div >
 
+<img src="/figures/params_plot.png" alt="params_plot" width="500"/>
+
+- Similar options as **criterion_plot**
+
+</div>
 </div>
 
 ---
 
-# LaTeX
+## Params plot (2)
 
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
+
+<div class="grid grid-cols-[35%,65%] gap-4">
+<div>
+
+
+```python
+em.params_plot(
+    res,
+    max_evaluations=300,
+    selector=lambda x: x["c"],
+)
+```
+
+</div>
+<div >
+
+<img src="/figures/params_plot_selector.png" alt="params_plot_selector" width="500"/>
+
+- **selector** is a function returning a subset of params
+
+</div>
+</div>
+
+---
+
+## There is maximize
+
+```python
+>>> def upside_down_sphere(params):
+...     return -params @ params
+
+>>> res = em.maximize(
+...     criterion=upside_down_sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgs",
+... )
+>>> res.params
+array([ 0.,  0.,  0.,  0., 0.])
+```
+
+---
+
+## Harmonized algo_options
+
+
+<div class="grid grid-cols-[60%,40%] gap-4">
+
+<div>
+
+```python
+>>> algo_options = {
+...     "convergence.relative_criterion_tolerance": 1e-9,
+...     "stopping.max_iterations": 100_000,
+...     "trustregion.initial_radius": 10.0,
+... }
+
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="nag_pybobyqa",
+...     algo_options=algo_options,
+... )
+>>> res.params
+array([0., 0., 0., 0., 0.])
+```
+
+</div>
+
+<div>
+
+- The same options have the same name
+- Different options have different names
+    - e.g., not one **tol**
+- Ignore irrelevant options
+
+</div>
+</div>
+
+---
+
+## [estimagic.readthedocs.io](https://estimagic.readthedocs.io/en/stable/index.html)
+
+<img src="/docs.png" alt="docs" width="500"/>
+
+
+---
+
+# Break (5 min)
+
+---
+
+# Practice Session 2: Convert previous example to estimagic (15 min)
+
+---
+
+# Choosing algorithms
+
+---
+
+## Preview of practice session
+
+You will get optimization problems that fail
+
+- Figure out why they fail
+- Choose an algorithm that works
+
+---
+
+## Relevant problem properties
+
+- **Smoothness**: Differentiable? Kinks? Discontinuities? Stochastic?
+- **Convexity**: Are there local optima?
+- **Goal**: Do you need a global solution? How precise?
+- **Size**: 2 parameters? 10? 100? 1000? More?
+- **Constraints**: Bounds? Linear constraints? Nonlinear constraints?
+- **Structure**: Nonlinear least-squares, Log-likelihood function
+
+-> Properties guide selection but experimentation is important
+
+---
+
+
+## **scipy_lbfgsb**
+
+- Limited memory BFGS
+- BFGS: Approximate hessians from multiple gradients
+- Criterion must be differentiable
+- Scales to a few thousand parameters
+- Beats other BFGS implementations in many benchmarks
+- Low overhead
+
+---
+
+## **fides**
+
+- Derivative based trust-region algorithm
+- Developed by Fabian Fröhlich as a Python package
+- Many advanced options to customize the optimization!
+- Criterion must be differentiable
+- Good solution if **scipy_lbfgsb** is too aggressive
+
+---
+
+## **nlopt_bobyqa**, **nag_pybobyqa**
+
+- **B**ound **O**ptimization **by** **Q**uadratic **A**pproximation
+- Derivative free trust region algorithm
+- **nlopt** has less overhead
+- **nag** has options to deal with noise
+- Good for non-differentiable not too noisy functions
+- Slower than derivative based methods but faster than neldermead
+
+---
+
+## **scipy_neldermead**, **nlopt_neldermead**
+
+- Popular direct search method
+- **scipy** does not support bounds
+- **nlopt** requires fewer criterion evaluations in most benchmarks
+- Almost never the best choice but sometimes not the worst
+
+---
+
+## **scipy_ls_lm**, **scipy_ls_trf**
+
+- Derivative based optimizers for nonlinear least squares
+- Criterion needs structure: $F(x) = \sum_i f_i(x)^2$
+- In estimagic, criterion returns a dict:
+
+```python
+def sphere_ls(x):
+    # x are the least squares residuals in the sphere function
+    return {"root_contributions": x, "value": x @ x}
+```
+
+- **scipy_ls_lm** is better for small problems without bounds
+- **scipy_ls_trf** is better for problems with many parameters
+
+---
+
+## **nag_dfols**, **pounders**
+
+- Derivative free trust region method for nonlinear least-squares
+- Both beat bobyqa for least-squares problems!
+- **nag_dfols** is usually the fastest
+- **nag_dfols** has advanced options to deal with noise
+- **pounders** can do criterion evaluations in parallel
+
+---
+
+## **ipopt**
+
+- Probably best open source optimizer for nonlinear constraints
+
+---
+
+# Practice Session 3: Play with **algorithm** and **algo_options** (20 min)
+
+---
+
+# Benchmarking
+
+---
+
+## Preview of practice session
+
+- Compare different optimizers on benchmark sets
+- Visualize comparison using profile and convergence plots
+
+---
+
+## What is benchmarking
+
+- Compare algorithms on functions with known optimum
+- Mirror problems you actually want to solve
+    - similar number of parameters
+    - similar w.r.t. differentiability or noise
+- Benchmark functions should be fast!
+
+---
+
+## Running benchmarks in estimagic
+
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+<div>
+
+```python
+problems = em.get_benchmark_problems(
+    "estimagic",
+)
+optimizers = [
+    "scipy_lbfgsb",
+    "nag_dfols",
+    "nlopt_bobyqa",
+    "scipy_neldermead",
+]
+results = em.run_benchmark(
+    problems=problems,
+    optimize_options=optimizers,
+    n_cores=4,
+    max_criterion_evaluations=1000,
+)
+```
+
+</div>
+<div>
+
+1. Create a set of test problems:
+    - dict with functions, start values and correct solutions
+2. Define **optimize_options**
+    - Optimizers to try
+    - Optionally: keyword arguments for minimize
+3. Get benchmark results
+    - Dict with histories and solutions
+
+</div>
+</div>
+
+---
+
+## Profile plots
+<br/>
+
+```python
+em.profile_plot(problems, results)
+```
+
+<img src="/benchmark.png" alt="profile_plot" width="700"/>
+
+---
+
+## Convergence plots
+
+<br/>
+
+<div class="grid grid-cols-[30%,70%] gap-4">
+<div>
+
+```python
+subset = [
+    "chebyquad_10",
+    "chnrsbne",
+    "penalty_1",
+    "bdqrtic_8",
+]
+em.convergence_plot(
+    problems,
+    results,
+    problem_subset=subset,
+)
+```
+</div>
+<div>
+
+<img src="/convergence_plot.png" alt="convergence_plot" width="750"/>
+
+</div>
+</div>
+---
+
+## Why not look at runtime
+
+- Benchmark functions are very fast (microseconds)
+    -> Runtime dominated by algorithm overhead
+- Most real functions are slow (milliseconds, seconds, minutes, ...)
+    -> Runtime dominated by the number of evaluations
+
+- You can do runtime plots as well
+
+
+---
+
+
+# Practice Session 4: Benchmarking optimizers (15 min)
+
+---
+
+
+# Break (10 min)
+
+<!-- ===================================================================================
+# Third hour
+==================================================================================== -->
+
+---
+
+# Bounds and Constraints
+--- 
+
+## Preview of practice session
+
+- Solve optimization problem with
+    - parameter bounds
+    - fixed parameters
+    - linear constraints
+
+---
+
+## Bounds
+
+- Lower and upper bounds on parameters
+- Also called box constraints
+- Handled by most algorithms
+- Need to hold for start parameters
+- Guaranteed to hold during entire optimization
+- Specification depends on **params** format
+
+---
+
+## How to specify bounds for array params
+
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+
+<div>
+
+```python
+>>> def sphere(x):
+...     return x @ x
+
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(3) + 1,
+...     lower_bounds=np.ones(3),
+...     algorithm="scipy_lbfgsb",
+... )
+>>> res.params
+array([1., 1., 1.])
+```
+</div>
+
+<div>
+
+- Specify **lower_bounds** and **upper_bounds**
+- Use **np.inf** or **-np.inf** to represent no bounds
+
+</div>
+</div>
+
+---
+
+## How to specify bounds for DataFrame params
+
+```python
+>>> params = pd.DataFrame({
+...         "value": [1, 2, 3],
+...         "lower_bound": [1, 1, 1],
+...         "upper_bound": [3, 3, 3],
+...     },
+...     index=["a", "b", "c"],
+... )
+
+>>> def criterion(p):
+...     return (p["value"] ** 2).sum()
+
+>>> em.minimize(criterion, params, algorithm="scipy_lbfgsb")
+```
+
+---
+
+## How to specify bounds for pytree params
+
+
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+params = {"x": np.arange(3), "intercept": 3}
+
+def criterion(p):
+    return p["x"] @ p["x"] + p["intercept"]
+
+res = em.minimize(
+    criterion,
+    params=params,
+    algorithm="scipy_lbfgsb",
+    lower_bounds={"intercept": -2},
+)
+
+```
+
+</div>
+<div>
+
+- Enough to specify the subset of params that actually has bounds
+- We try to match your bounds with params
+- Raise **InvalidBoundsError** in case of ambiguity
+
+</div>
+</div>
+
+---
+
+## Constraints
+
+
+- Constraints are conditions on parameters
+- Linear constraints
+    - $\min_{x} f(x) s.t. l \leq A x \leq u$
+    - $\min_{x} f(x) s.t. A x = v$
+- Nonlinear constraints:
+    - $\min_{x} f(x)$ s.t. $c_1(x) = 0, c_2(x) >= 0$
+- "estimagic-constraints":
+    - E.g. find probabilities or covariance matrix, fix parameters, ...
+
+---
+
+
+## Example: Find valid probabilities
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+```python
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.array([0.1, 0.5, 0.4, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints=[{
+...         "loc": [0, 1, 2],
+...         "type": "probability"
+...     }],
+... )
+
+>>> res.params
+array([0.33334, 0.33333, 0.33333, -0., 0.])
+```
+</div>
+<div>
+
+- Restrict first 3 parameters to be probabilities
+    - Between 0 and 1
+    - Sum to 1
+- But "scipy_lbfsb" is unconstrained?!
+
+</div>
+</div>
+
+---
+
+## What happened
+
+- Estimagic can implement some types of constraints via reparametrization
+- Transforms a constrained problem into an unconstrained one
+- Constraints must hold in start params
+- Guaranteed to hold during entire optimization
+
+---
+
+## Which constraints can be handled via reparametrization?
+
+- Fixing parameters (simple but useful)
+- Finding valid covariance and correlation matrices
+- Finding valid probabilities
+- Linear constraints (as long as there are not too many)
+    - $\min f(x) \, s.t. \, A_1 x = 0 \text{ and } A_2 x \leq 0$
+
+---
+
+## Fixing parameters
+
+
+<div class="grid grid-cols-[60%,40%] gap-4">
+<div>
+
+```python
+>>> def criterion(params):
+...     offset = np.linspace(1, 0, len(params))
+...     x = params - offset
+...     return x @ x
+
+unconstrained_optimum = [1, 0.8, 0.6, 0.4, 0.2, 0]
+
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.array([2.5, 1, 1, 1, 1, -2.5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints={"loc": [0, 5], "type": "fixed"},
+... )
+>>> res.params
+array([ 2.5,  0.8,  0.6,  0.4,  0.2, -2.5])
+```
+
+</div>
+<div>
+
+- **loc** selects location 0 and 5 of the parameters
+- **type** states that they are fixed
+
+</div>
+</div>
+
+
+---
+
+## Linear constraints
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.ones(6),
+...     algorithm="scipy_lbfgsb",
+...     constraints={
+...         "loc": [0, 1, 2, 3],
+...         "type": "linear",
+...         "lower_bound": 0.95,
+...         "weights": 0.25,
+...     },
+... )
+>>> res.params
+array([ 1.25, 1.05, 0.85, 0.65, 0.2 , -0.])
+```
+
+</div>
+<div>
+
+- Impose that average of first 4 parameters is larger than 0.95
+- Weights can be scalars or same length as selected parameters
+- Use "value" instead of "lower_bound" for linear equality constraint
+
+</div>
+</div>
+
+---
+
+## Constraints have to hold
+
+```python
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.array([1, 2, 3, 4, 5]),
+...     algorithm="scipy_lbfgsb",
+...     constraints={"loc": [0, 1, 2], "type": "probability"},
+... )
+```
+
+```python
+InvalidParamsError: A constraint of type 'probability' is not fulfilled in params,
+please make sure that it holds for the starting values. The problem arose because:
+Probabilities do not sum to 1. The names of the involved parameters are: ['0', '1', '2']
+The relevant constraint is:
+{'loc': [0, 1, 2], 'type': 'probability', 'index': array([0, 1, 2])}.
+```
+
+---
+
+
+## Nonlinear constraints
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+>>> res = em.minimize(
+...     criterion=criterion,
+...     params=np.ones(6),
+...     algorithm="scipy_slsqp",
+...     constraints={
+...         "type": "nonlinear",
+...         "loc": [0, 1, 2, 3, 4],
+...         "func": lambda x: np.prod(x),
+...         "value": 1.0,
+...     },
+... )
+>>> res.params
+array([1.31, 1.16, 1.01, 0.87, 0.75, -0.])
+```
+
+</div>
+<div>
+
+- Restrict the product of first five parameters to 1
+- Only work with some optimizers
+- **func** can be an arbitrary python function of params that returns a number, array or pytree
+- Use "lower_bound" and "upper_bound" instead of "value" for inequality constraints
+
+</div>
+</div>
+---
+
+## Parameter selection methods
+
+- **"loc"** can be replaced other things
+- If params is a DataFrame with "value" column
+    - **"query"**: An arbitrary query string that selects the relevant rows
+    - **"loc"**: Will be passed to **DataFrame.loc**
+- Always
+    - **"selector"**: A function that takes params as argument and returns a subset of params
+- More in the [documentation](https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/how_to_specify_constraints.html#how-to-select-the-parameters)
+---
+
+# Practice Session 5: Constrained optimization (15 min)
+
+
+---
+
+# Global optimization
+
+---
+
+## Global vs local optimization
+
+- Local: Find any local optimum
+    - All we have done so far
+- Global: Find best local optimum
+    - Needs bounds to be well defined
+    - Extremely challenging in high dimensions
+- Local = global for convex problems
+
+---
+
+## Examples
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+<div>
+
+<img src="/figures/alpine.png" alt="alpine" width="500" class="center"/>
+
+
+</div>
+<div>
+
+<img src="/figures/ackley.png" alt="ackley" width="500" class="center"/>
+
+</div>
+</div>
+
+
+---
+
+### How about brute force?
+
+<div class="grid grid-cols-[30%,70%] gap-4">
+<div>
+
+
+<img src="/figures/curse_of_dimensionality_v.png" alt="dimensionality" width="180" class="center"/>
+
+</div>
+<div>
+
+<style scoped>
+table {
+  font-size: 30px;
+}
+</style>
+
+
+| Number of <br /> Dimensions | Runtime (1 ms per evaluation, <br /> 100 points per dimension) |
+| ----------------------------| ---------------------------------------------------------------|
+| 1                           | 100 ms                                                         |
+| 2                           | 10 s                                                           |
+| 3                           | 16 min                                                         |
+| 4                           | 27 hours                                                       |
+| 5                           | 16 weeks                                                       |
+| 6                           | 30 years                                                       |
+
+</div>
+
+</div>
+---
+
+## Genetic algorithms
+
+- Heuristic inspired by natural selection
+- Random initial population of parameters
+- In each evolution step:
+    - Evaluate "fitness" of all population members
+    - Replace worst by combinations of good ones
+- Converge when max iterations are reached
+- Examples: **"pygmo_gaco"**, **"pygmo_bee_colony"**, **"nlopt_crs2_lm"**, ...
+
+---
+
+## Bayesian optimization
+
+- Evaluate criterion on grid or sample of parameters
+- Build surrogate model of criterion
+- In each iteration
+    - Do new criterion evaluations at promising points
+    - Improve surrogate model
+- Converge when max iterations is reached
+
+---
+
+## Multistart optimization:
+
+- Evaluate criterion on random exploration sample
+- Run local optimization from best point
+- In each iteration:
+    - Combine best parameter and next best exploration point
+    - Run local optimization from there
+- Converge if current best optimum is rediscovered several times
+
+---
+
+
+## Multistart example
+
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+>>> res = em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_neldermead",
+...     soft_lower_bounds=np.full(5, -5),
+...     soft_upper_bounds=np.full(5, 15),
+...     multistart=True,
+...     multistart_options={
+...         "convergence.max_discoveries": 5,
+...         "n_samples": 1000
+...     },
+... )
+>>> res.params
+array([0., 0., 0., 0.,  0.])
+```
+
+
+</div>
+<div>
+
+- Turn local optimizers global
+- Inspired by [tiktak algorithm](https://github.com/serdarozkan/TikTak#tiktak)
+- Use any optimizer
+- Distinguish hard and soft bounds
+
+</div>
+</div>
+
+---
+
+## How to choose
+
+- Extremely expensive criterion (i.e. can only do a few evaluations):
+    - Bayesian optimization
+- Well behaved function:
+    - Multistart with local optimizer tailored to function properties
+- Rugged function with extremely many local optima
+    - Genetic optimizer
+    - Consider refining the result with local optimizer
+- All are equally parallelizable
+
+---
+
+# Scaling
+
+---
+
+## Preview of practice session
+
+- Learn about badly scaled problems
+- Visualize sensitiviy of criterion w.r.t parameters
+- Use scaling to improve an optimization
+
+---
+
+## What is scaling
+
+- Single most underrated topic among economists!
+- Well scaled: A fixed step in any parameter dimension yields roughly comparable changes in function value
+    - $f(a, b) = 0.5 a^2 + 0.8 b^2$
+- Badly scaled: Some parameters are much more influential
+    - $f(a, b) = 1000 a^2 + 0.2 b^2$
+- Often arises when parameters have very different units
+
+---
+
+## Effects of bad scaling
+
+- Will try performance of optimizers on
+    - Standard "estimagic" set of problems
+    - badly scaled version
+    - badly scaled version when **scaling=True** in **minimize**
+
+```python
+problems_bad_scaling = get_benchmark_problems(
+    name="estimagic",
+    scaling=True,
+    scaling_options={"min_scale": 1, "max_scale": 1_000},
+)
+```
+
+---
+
+
+## Effect of bad scaling: **scipy_lbfgsb**
+
+<img src="/scaling_scipy_lbfgsb.png" alt="scaling_lbfgsb" width="900"/>
+
+---
+
+## Effect of bad scaling: **nag_dfols**
+
+<img src="/scaling_nag_dfols.png" alt="scaling_dfols" width="900"/>
+
+---
+
+## Effect of bad scaling: **nlopt_bobyqa**
+
+<img src="/scaling_nlopt_bobyqa.png" alt="scaling_nlopt_bobyqa" width="900"/>
+
+---
+
+## Scaling in estimagic: By start params
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+def badly_scaled(x):
+    out = (
+        0.01 * np.abs(x[0])
+        + np.abs(x[1])
+        + (x[2] - 0.9) ** 6
+    )
+    return out
+
+em.minimize(
+    criterion=badly_scaled,
+    params=np.array([200, 1, 1]),
+    scaling=True,
+)
+```
+
+</div>
+<div>
+
+- Optimizer sees x / x_start
+- Will recover that x[0] needs large steps
+- Won't recover that x[2] needs tiny steps
+
+</div>
+</div>
+
+---
+
+## Scaling in estimagic: By bounds
+
+<div class="grid grid-cols-[55%,45%] gap-4">
+<div>
+
+```python
+
+em.minimize(
+    criterion=badly_scaled,
+    params=np.array([200, 1, 1]),
+    scaling=True,
+    lower_bounds=np.array([-200, -2, 0.8]),
+    upper_bounds=np.array([600, 2, 1]),
+    scaling=True,
+    scaling_options={"method": "bounds"},
+)
+
+```
+
+</div>
+<div>
+
+- Internal parameter space mapped to $[0, 1]^n$
+- Will work great in this case
+- Requires careful specification of bounds
+
+</div>
+</div>
+
+---
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+
+<div>
+
+## Very scale sensitive
+
+- **nag_pybobyqa**
+- **tao_pounders**
+- **pounders**
+- **nag_dfols**
+- **scipy_cobyla**
+
+
+<br/>
+
+### Somewhat scale sensitive
+
+- **scipy_lbfgsb**
+- **fides**
+
+</div>
+<div>
+
+
+
+## Not scale sensitive
+
+- **scipy_neldermead**
+- **nlopt_neldermead**
+- **nlopt_bobyqa**
+- **scipy_powell**
+- **scipy_ls_lm**
+- **scipy_ls_trf**
+
+</div>
+</div>
+
+---
+
+# Practice Session 6: Scaling of optimization problems (15 min)
+
+
+
+<!-- ===================================================================================
+# Last hour
+==================================================================================== -->
+
+---
+
+# JAX and JAXopt
+
+--- 
+
+## Preview of practice session(s)
+
+- Solve an optimization problem using JAX gradients
+- Solve an optimization problem using JAXopt
+- Write a batched solver using JAXopt
+
+---
+
+## Numerical vs automatic differentiation (oversimplified)
+
+- **Automatic differentiation**
+    - Magic way to calculate precise derivatives of Python functions
+    - Gradient calculation takes 3 to 4 times longer than function
+    - Runtime is independent of number of parameters
+    - Code must be written in a certain way
+- **Numerical differentiation**
+    - Finite step approximation to derivatives
+    - Less precise than automatic differentiation
+    - Runtime increases linearly with number of parameters
+
+
+---
+
+## What is JAX
+
+- GPU accelerated replacement for Numpy
+- State of the art automatic differentiation
+    - Gradients
+    - Jacobians
+    - Hessians
+- Just in time compiler for python code
+- Composable function transformations such as **vmap**
+
+---
+
+## Calculating derivatives with JAX
+
+```python
+>>> import jax.numpy as jnp
+>>> import jax
+
+>>> def sphere(x):
+...     return jnp.sum(x ** 2)
+
+>>> gradient = jax.grad(sphere)
+
+>>> gradient(jnp.array([1., 1.5, 2.]))
+DeviceArray([2., 3., 4.], dtype=float64)
+```
+
+---
+
+## Providing derivatives to estimagic
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+<div>
+
+```python
+>>> def sphere_gradient(params):
+...     return 2 * params
+
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     derivative=sphere_gradient,
+... )
+
+>>> em.minimize(
+...     criterion=sphere,
+...     params=np.arange(5),
+...     algorithm="scipy_lbfgsb",
+...     numdiff_options={"n_cores": 6},
+... )
+```
+
+</div>
+
+<div>
+
+- You can provide derivatives
+- Otherwise, estimagic calculates them numerically
+- Parallelization on (up to) as many cores as parameters
+
+</div>
+</div>
+
+
+---
+
+# Practice Session 7: Using JAX derivatives in estimagic (10 min)
+
+
+---
+
+<div class="grid grid-cols-[50%,50%] gap-4">
+<div>
+
+## What is JAXopt
+
+- Library of optimizers written in JAX
+
+- Hardware accelerated
+
+- Batchable
+
+- Differentiable
+
+
+</div>
+<div>
+
+## When to use it
+
+- Solve many instances of same optimization problem
+- Differentiate optimization w.r.t hyperparameters
+
+</div>
+</div>
+
+
+---
+
+## Example
+
+Economic problem:
+
+- Many agents facing similar optimization problem
+    - batchable
+- Gradient of log-likelihood requires gradient of solutions
+    - differentiable solutions
+
+
+---
+
+## Simple optimization in JAXopt
+
+<div class="grid grid-cols-[63%,37%] gap-4">
+<div>
+
+```python
+>>> import jax
+>>> import jax.numpy as jnp
+>>> from jaxopt import LBFGS
+
+>>> x0 = jnp.array([1.0, -2, -5])
+>>> shift = jnp.array([-2.0, -4, -6])
+
+>>> def criterion(x, shift):
+...     return jnp.vdot(x, x + shift)
+
+>>> solver = LBFGS(fun=criterion)
+
+>>> result = solver.run(init_params=x0, shift=shift)
+>>> result.params
+DeviceArray([1.0, 2.0, 3.0], dtype=float64)
+```
+
+</div>
+<div>
+
+<br/>
+
+- import solver
+
+- initialize solver with criterion
+
+- run solver with starting parameters
+
+- pass additional arguments of criterion to run method
+
+</div>
+</div>
+
+
+---
+
+## Vmap
+
+<br/>
+
+<div class="grid grid-cols-[60%,40%] gap-4">
+<div>
+
+```python
+>>> import numpy as np
+>>> import scipy as sp
+
+>>> a = np.stack([np.diag([1, 2]), np.diag([3, 4])])
+>>> a[0]
+array([[ 1. , 0.],
+       [ 0. , 2.]])
+
+>>> sp.linalg.inv(a[0])
+array([[ 1. , -0. ],
+       [ 0. ,  0.5]])
+
+>>> sp.linalg.inv(a)
+... ValueError: expected square matrix
+
+>>> res = [sp.linalg.inv(a[i]) for i in [0, 1]]
+>>> np.stack(res)
+array([[[ 1.        , -0.        ],
+        [ 0.        ,  0.5       ]],
+       [[ 0.33333333, -0.        ],
+        [ 0.        ,  0.25      ]]])
+```
+</div>
+<div>
+
+- consider matrix inversion
+
+- not defined for arrays with dimension > 2 (in **scipy**)
+
+- loop over 2d matrices
+
+- syntactic sugar: **np.vectorize** and the like
+
+    - does not increase speed
+
+
+</div>
+</div>
+
+
+---
+
+## Vmap in JAX
+
+<div class="grid grid-cols-[67%,33%] gap-4">
+<div>
+
+```python
+>>> import jax.numpy as jnp
+>>> import jax.scipy as jsp
+>>> from jax import vmap, jit
+
+>>> a = jnp.array(a)
+
+>>> jax_inv = jit(vmap(jsp.linalg.inv))
+
+>>> jax_inv(a)
+DeviceArray([[[1.        , 0.        ],
+              [0.        , 0.5       ]],
+
+             [[0.33333333, 0.        ],
+              [0.        , 0.25      ]]], dtype=float64)
+```
+</div>
+<div>
+
+- use **jax.numpy** and **jax.scipy**
+
+- define vectorized map using **jax.vmap**
+
+- need **jit** on the outside to compile the new function
+
+
+</div>
+</div>
+
+---
+
+## Vectorize an optimization in JAXopt
+
+<div class="grid grid-cols-[67%,33%] gap-4">
+<div>
+
+```python
+>>> from jax import jit, vmap
+
+>>> def solve(x, shift):
+...     return solver.run(init_params=x, shift=shift).params
+
+>>> batch_solve = jit(vmap(solve, in_axes=(None, 0)))
+>>> shifts = jnp.array([
+        [0.0, 1.0, 2.0],
+        [3.0, 4.0, 5.0]
+    ])
+
+>>> batch_solve(x0, shifts)
+DeviceArray([[ 0. , -0.5, -1. ],
+             [-1.5, -2. , -2.5]], dtype=float64)
+```
+</div>
+<div>
+
+- import **jit** and **vmap**
+
+- define wrapper around solve
+
+- call vmap on wrapper
+
+    - **in_axes=(None, 0)** means that we map over the 0-axis of the second argument
+
+    - call **jit** at the end
+
+</div>
+</div>
+
+---
+
+## Differentiate a solution in JAXopt
+
+<div class="grid grid-cols-[60%,40%] gap-4">
+<div>
+
+```python
+>>> from jax import jacobian
+
+>>> jacobian(solve, argnums=1)(x0, weight)
+DeviceArray([[-0.5,  0. ,  0. ],
+             [ 0. , -0.5,  0. ],
+             [ 0. ,  0. , -0.5]], dtype=float64)
+
+```
+</div>
+<div>
 
 <br>
 
-Inline $\sqrt{3x-1}+(1+x)^2$
+- import **jacobian** or **grad**
 
-Block
-$$
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
-
-```mermaid {scale: 0.5}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
-```
-
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
+- use **argnums** to specify w.r.t. which argument we differentiate
 
 </div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
----
-src: ./pages/multiple-entries.md
-hide: false
----
+</div>
 
 ---
-layout: center
-class: text-center
+
+# Practice Session 8: Vectorized optimization in JAXopt (15 min)
+
 ---
 
-# Learn More
+# Final remarks
 
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+---
+
+## Tips
+
+- Exploit least squares structure if you can
+- Look at criterion and params plots
+- Try multiple algorithms (based on theory) and take the best (based on experiments)
+- Think about scaling
+- Use multistart over genetic algorithms for well behaved functions
+- Make your problem jax compatible and use automatic differentiation
+
+
+---
+
+## The estimagic Team
+<br/>
+<br/>
+
+<style scoped>
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 24px;
+}
+
+</style>
+
+
+<table class="center">
+    <tr>
+        <th>
+            <img src="janos.jpg" alt="janos" width="190"/>
+            <br>
+            Janos
+        </th>
+        <th>
+            <img src="/tim.jpeg" alt="tim" width="190"/>
+            <br>
+            Tim
+        </th>
+        <th>
+            <img src="/klara.jpg" alt="klara" width="190"/>
+            <br>
+            Klara
+        </th>
+    </tr>
+    <tr>
+        <th>
+            <img src="/sebi.jpg" alt="sebastian" width="190"/>
+            <br>
+            Sebastian
+        </th>
+        <th>
+            <img src="/tobi.png" alt="tobi" width="190"/>
+            <br>
+            Tobias
+        </th>
+        <th>
+            <img src="hmg.jpg" alt="hmg" width="190"/>
+            <br>
+            Hans-Martin
+        </th>
+    </tr>
+</table>
+
+
+---
+
+## How to contribute
+
+- Make issues or provide feedback
+- Improve or extend the documentation
+- Suggest, wrap or implement new optimizers
+- Teach estimagic to colleagues, students and friends
+- Make us happy by giving us a star on [github.com/OpenSourceEconomics/estimagic](https://github.com/OpenSourceEconomics/estimagic)
+
+
+---
