@@ -102,7 +102,7 @@ University of Bonn
 ### Preview of practice session
 
 - Translate a criterion function from math to code
-  
+
 - Use `scipy.optimize` to minimize the criterion function
 
 ---
@@ -920,7 +920,7 @@ em.convergence_plot(
 
 <!-- _class: lead -->
 # Bounds and Constraints
---- 
+---
 
 ### Preview of practice session
 
@@ -1621,7 +1621,7 @@ section.split {
 <!-- _class: lead -->
 # JAX and JAXopt
 
---- 
+---
 ### Preview of practice session(s)
 
 - Solve an optimization problem using JAX gradients
