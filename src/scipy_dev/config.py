@@ -1,6 +1,6 @@
 """This module contains the general configuration of the project."""
-from pathlib import Path
 
+from pathlib import Path
 
 SRC = Path(__file__).parent.resolve()
 ROOT = SRC.joinpath("..", "..").resolve()

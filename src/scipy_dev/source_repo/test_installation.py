@@ -1,4 +1,5 @@
 """Test that the environment is correctly installed."""
+
 from distutils.spawn import find_executable
 
 

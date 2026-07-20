@@ -1,7 +1,6 @@
 import pytask
 from scipy_dev.auxiliary import is_installed
 
-
 for executable in ["marp", "decktape"]:
 
     @pytask.mark.task
