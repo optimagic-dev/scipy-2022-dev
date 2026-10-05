@@ -7,7 +7,6 @@ from scipy_dev.config import PUBLIC
 from scipy_dev.config import ROOT
 from scipy_dev.config import SRC
 
-
 # ======================================================================================
 # copy environment file
 # ======================================================================================
