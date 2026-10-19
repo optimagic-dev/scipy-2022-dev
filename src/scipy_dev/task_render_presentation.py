@@ -5,7 +5,6 @@ from scipy_dev.config import BLD
 from scipy_dev.config import PUBLIC
 from scipy_dev.config import SRC
 
-
 GRAPHS = SRC.joinpath("graphs")
 FIGURES = BLD.joinpath("figures")
 
