@@ -9,7 +9,6 @@ from scipy_dev.visualizations import create_grid_search_figure
 from scipy_dev.visualizations import create_params_plot
 from scipy_dev.visualizations import plot_function_3d
 
-
 for plot_kwargs in [{}, {"monotone": True}, {"max_evaluations": 300}]:
 
     if plot_kwargs:
